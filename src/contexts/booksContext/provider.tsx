@@ -52,7 +52,7 @@ const bookMocked: Book = {
 
 export const BooksProvider = ({ children }: { children?: React.ReactNode }) => {
   const [books, setBooks] = useState<Book[]>(() =>
-    Array.from({ length: 5 }, (_, index) => ({
+    Array.from({ length: 20 }, (_, index) => ({
       ...bookMocked,
       id: index.toString(),
     }))

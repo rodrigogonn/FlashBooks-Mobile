@@ -1,4 +1,4 @@
-import { FontFamily } from 'contexts/themeContext/types';
+import { FontFamily } from './types';
 
 export const comfortaa: FontFamily = {
   light: 'Comfortaa_300Light',
