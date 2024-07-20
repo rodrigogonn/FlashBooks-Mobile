@@ -3,7 +3,9 @@ import { useMemo } from 'react';
 import { Text, TextProps, TextStyle } from 'react-native';
 
 export enum TypographyVariant {
+  HeaderTitle,
   Body,
+  Title,
   Subtitle,
   BookListTitle,
   Small,
@@ -34,6 +36,18 @@ const useStyleFromVariant = (variant: TypographyVariant) => {
 
   const style = useMemo(() => {
     switch (variant) {
+      case TypographyVariant.HeaderTitle:
+        return {
+          fontFamily: theme.fontFamily.bold,
+          fontSize: 20,
+          color: theme.colors.page.title,
+        };
+      case TypographyVariant.Title:
+        return {
+          fontFamily: theme.fontFamily.bold,
+          fontSize: 20,
+          color: theme.colors.page.title,
+        };
       case TypographyVariant.Body:
         return {
           fontFamily: theme.fontFamily.regular,

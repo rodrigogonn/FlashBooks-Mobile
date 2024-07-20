@@ -1,11 +1,15 @@
+import { useReading } from 'contexts/readingContext/useReading';
 import { useTheme } from 'contexts/themeContext';
-import { useReadingContext } from 'pages/Reading/context/useReadingContext';
+import { useMemo } from 'react';
 import { View } from 'react-native';
 
 export const Progress = () => {
-  const { currentPageIndex, book } = useReadingContext();
+  const { currentPageIndex, book } = useReading();
   const { readingTheme } = useTheme();
-  const percentage = (currentPageIndex + 0.1) / book.pages.length;
+  const percentage = useMemo(() => {
+    if (!book) return 0;
+    return (currentPageIndex + 0.1) / book.pages.length;
+  }, []);
 
   return (
     <View

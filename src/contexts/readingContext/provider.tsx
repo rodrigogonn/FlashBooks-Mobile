@@ -1,15 +1,13 @@
-import { useBooks } from 'contexts/booksContext';
+import { Book } from 'contexts/booksContext';
 import { ReactNode, useState } from 'react';
-import { ReadingContext } from './Context';
+import { ReadingContext } from './context';
 
 interface ReadingProviderProps {
   children: ReactNode;
 }
 
 export const ReadingProvider = ({ children }: ReadingProviderProps) => {
-  const { library } = useBooks();
-  const book = library[0];
-
+  const [book, setBook] = useState<Book>();
   const [textSize, setTextSize] = useState(1);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
 
@@ -21,6 +19,7 @@ export const ReadingProvider = ({ children }: ReadingProviderProps) => {
     <ReadingContext.Provider
       value={{
         book,
+        changeReadingBook: setBook,
         currentPageIndex,
         changePage: setCurrentPageIndex,
         textSize: textSize,

@@ -1,6 +1,5 @@
 import { BookComponent } from 'components/BookComponent';
 import { PageLayout } from 'components/PageLayout';
-import { Typography, TypographyVariant } from 'components/Typography';
 import { Dimensions, View } from 'react-native';
 import { RouteParams } from 'routes';
 
@@ -10,21 +9,12 @@ export const BookList = ({
   route: {
     params: { title, books },
   },
-  navigation,
 }: RouteParams<'BookList'>) => {
   return (
-    <PageLayout>
-      <View
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'flex-end',
-          paddingHorizontal: 16,
-        }}>
-        <Typography variant={TypographyVariant.Subtitle}>{title}</Typography>
-      </View>
-
+    <PageLayout
+      header={{
+        title,
+      }}>
       <View
         style={{
           paddingHorizontal: 16,

@@ -1,27 +1,35 @@
-import { useTheme } from 'contexts/themeContext';
+import { useRoute } from '@react-navigation/native';
+import { Header } from 'components/Header';
 import { ScrollView, View } from 'react-native';
 
 interface PageLayoutProps {
+  header?: {
+    title?: string;
+  };
   children?: React.ReactNode;
 }
 
-export const PageLayout = ({ children }: PageLayoutProps) => {
-  const { theme } = useTheme();
+export const PageLayout = ({ children, header }: PageLayoutProps) => {
+  const route = useRoute();
+  const { title = route.name } = header || {};
 
   return (
-    <ScrollView
-      style={{
-        height: '100%',
-        backgroundColor: theme.colors.page.background,
-      }}>
-      <View
+    <>
+      <Header title={title} />
+
+      <ScrollView
         style={{
-          paddingTop: 16,
-          paddingBottom: 64,
-          gap: 16,
+          height: '100%',
         }}>
-        {children}
-      </View>
-    </ScrollView>
+        <View
+          style={{
+            paddingTop: 16,
+            paddingBottom: 64,
+            gap: 16,
+          }}>
+          {children}
+        </View>
+      </ScrollView>
+    </>
   );
 };

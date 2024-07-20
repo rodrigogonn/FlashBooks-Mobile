@@ -5,6 +5,7 @@ import {
   useFonts,
 } from '@expo-google-fonts/comfortaa';
 import { BooksProvider } from 'contexts/booksContext';
+import { ReadingProvider } from 'contexts/readingContext/provider';
 import { ThemeProvider } from 'contexts/themeContext';
 import { StatusBar } from 'expo-status-bar';
 import { Routes } from 'routes';
@@ -24,7 +25,9 @@ const App = () => {
     <>
       <ThemeProvider>
         <BooksProvider>
-          <Routes />
+          <ReadingProvider>
+            <Routes />
+          </ReadingProvider>
         </BooksProvider>
       </ThemeProvider>
 

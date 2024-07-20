@@ -7,7 +7,7 @@ import { RouteParams, StackNavigation } from 'routes';
 import { Categories } from './components/Categories';
 import { categoriesFromIds } from './utils/categoriesFromIds';
 
-export const Home = ({}: RouteParams<'Home'>) => {
+export const Discover = ({}: RouteParams<'Discover'>) => {
   const stackNavigation = useNavigation<StackNavigation>();
   const { library } = useBooks();
   const categories = useMemo(() => {

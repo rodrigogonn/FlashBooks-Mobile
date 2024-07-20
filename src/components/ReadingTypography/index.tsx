@@ -1,9 +1,10 @@
+import { useReading } from 'contexts/readingContext/useReading';
 import { useTheme } from 'contexts/themeContext';
-import { useReadingContext } from 'pages/Reading/context/useReadingContext';
 import { useMemo } from 'react';
 import { Text, TextProps, TextStyle } from 'react-native';
 
 export enum ReadingTypographyVariant {
+  HeaderTitle,
   Title,
   Paragraph,
 }
@@ -34,10 +35,16 @@ export const ReadingTypography = ({
 
 const useStyleFromVariant = (variant: ReadingTypographyVariant) => {
   const { readingTheme } = useTheme();
-  const { textSize } = useReadingContext();
+  const { textSize } = useReading();
 
   const style = useMemo(() => {
     switch (variant) {
+      case ReadingTypographyVariant.HeaderTitle:
+        return {
+          fontFamily: readingTheme.fontFamily.bold,
+          fontSize: 20,
+          color: readingTheme.colors.title,
+        };
       case ReadingTypographyVariant.Title:
         return {
           fontFamily: readingTheme.fontFamily.bold,

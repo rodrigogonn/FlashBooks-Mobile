@@ -2,8 +2,8 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { IconButton } from 'components/IconButton';
 import { Modal } from 'components/Modal';
 import { Typography, TypographyVariant } from 'components/Typography';
+import { useReading } from 'contexts/readingContext/useReading';
 import { useTheme } from 'contexts/themeContext';
-import { useReadingContext } from 'pages/Reading/context/useReadingContext';
 import { useMemo } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { readingThemes } from 'theme/readingTheme';
@@ -25,7 +25,7 @@ interface ReadingAdjustments {
 
 export const ReadingAdjustments = ({ open, onClose }: ReadingAdjustments) => {
   const { readingTheme, theme, changeReadingTheme } = useTheme();
-  const { textSize: textSize, changeTextSize } = useReadingContext();
+  const { textSize: textSize, changeTextSize } = useReading();
 
   const themes = useMemo(
     () =>

@@ -1,12 +1,12 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import { IconButton } from 'components/IconButton';
-import { ContentType, Page } from 'contexts/booksContext';
-import { useTheme } from 'contexts/themeContext';
-import { ScrollView, View } from 'react-native';
 import {
   ReadingTypography,
   ReadingTypographyVariant,
-} from '../ReadingTypography';
+} from 'components/ReadingTypography';
+import { ContentType, Page } from 'contexts/booksContext';
+import { useTheme } from 'contexts/themeContext';
+import { ScrollView, View } from 'react-native';
 
 interface PageProps {
   page: Page;

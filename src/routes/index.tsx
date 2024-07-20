@@ -1,3 +1,4 @@
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import {
   BottomTabScreenProps,
   createBottomTabNavigator,
@@ -13,18 +14,18 @@ import {
 } from '@react-navigation/native-stack';
 import { Book } from 'contexts/booksContext';
 import { BookList } from 'pages/BookList';
-import { Home } from 'pages/Home';
-import { Library } from 'pages/Library';
+import { Discover } from 'pages/Home/Discover';
+import { Library } from 'pages/Home/Library';
 import { Reading } from 'pages/Reading';
 
 type TabRouteParamList = {
-  Home: undefined;
+  Discover: undefined;
   Library: undefined;
 };
 
 type StackRouteParamList = {
-  Root: NavigatorScreenParams<TabRouteParamList>;
-  Reading: undefined;
+  Home: NavigatorScreenParams<TabRouteParamList>;
+  Reading: { book: Book };
   BookList: { title: string; books: Book[] };
 };
 
@@ -41,11 +42,53 @@ const Tab = createBottomTabNavigator<TabRouteParamList>();
 
 export type StackNavigation = NativeStackNavigationProp<StackRouteParamList>;
 
-export const Root = ({}: RouteParams<'Root'>) => {
+export const Home = ({}: RouteParams<'Home'>) => {
   return (
-    <Tab.Navigator initialRouteName="Library">
-      <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Library" component={Library} />
+    <Tab.Navigator
+      initialRouteName="Discover"
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size }) => {
+          let iconName;
+
+          switch (route.name) {
+            case 'Discover':
+              iconName = 'compass';
+              break;
+            case 'Library':
+              iconName = 'bookmark';
+              break;
+          }
+
+          return <FontAwesome5 name={iconName} size={size} color={color} />;
+        },
+        tabBarStyle: {
+          // height: 100, // @TODO ajustar o menu
+        },
+        tabBarItemStyle: {
+          // padding: 16,
+        },
+        tabBarLabelStyle: {
+          // padding: 16,
+        },
+        tabBarIconStyle: {
+          // padding: 16,
+        },
+        headerShown: false,
+      })}>
+      <Tab.Screen
+        name="Discover"
+        component={Discover}
+        options={{
+          tabBarLabel: 'Explorar',
+        }}
+      />
+      <Tab.Screen
+        name="Library"
+        component={Library}
+        options={{
+          tabBarLabel: 'Biblioteca',
+        }}
+      />
     </Tab.Navigator>
   );
 };
@@ -53,22 +96,14 @@ export const Root = ({}: RouteParams<'Root'>) => {
 export const Routes = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Root">
-        <Stack.Screen name="Root" component={Root} />
-        <Stack.Screen
-          name="Reading"
-          component={Reading}
-          options={{
-            headerShown: true,
-          }}
-        />
-        <Stack.Screen
-          name="BookList"
-          component={BookList}
-          options={{
-            headerShown: true,
-          }}
-        />
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerShown: false,
+        }}>
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Reading" component={Reading} />
+        <Stack.Screen name="BookList" component={BookList} />
       </Stack.Navigator>
     </NavigationContainer>
   );

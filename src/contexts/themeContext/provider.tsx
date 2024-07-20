@@ -8,7 +8,7 @@ export const ThemeProvider = ({ children }: { children?: React.ReactNode }) => {
   // @TODO salvar no localstorage
   const [themeName, setThemeName] = useState<ThemeName>(ThemeName.Main);
   const [readingThemeName, setReadingThemeName] = useState<ReadingThemeName>(
-    ReadingThemeName.Light
+    ReadingThemeName.Dark
   );
 
   const changeTheme = (name: ThemeName) => {
