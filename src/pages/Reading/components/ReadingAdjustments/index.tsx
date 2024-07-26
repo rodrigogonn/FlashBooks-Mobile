@@ -18,14 +18,14 @@ const adjustments = {
   },
 };
 
-interface ReadingAdjustments {
-  open: boolean;
-  onClose: () => void;
-}
-
-export const ReadingAdjustments = ({ open, onClose }: ReadingAdjustments) => {
+export const ReadingAdjustments = () => {
   const { readingTheme, theme, changeReadingTheme } = useTheme();
-  const { textSize: textSize, changeTextSize } = useReading();
+  const {
+    textSize: textSize,
+    changeTextSize,
+    closeAdjustments,
+    adjustmentsOpen,
+  } = useReading();
 
   const themes = useMemo(
     () =>
@@ -52,8 +52,8 @@ export const ReadingAdjustments = ({ open, onClose }: ReadingAdjustments) => {
 
   return (
     <Modal
-      open={open}
-      onClose={onClose}
+      open={adjustmentsOpen}
+      onClose={closeAdjustments}
       style={{
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,

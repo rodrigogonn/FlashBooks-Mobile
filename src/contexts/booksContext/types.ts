@@ -1,6 +1,9 @@
 export interface BooksContextData {
   library: Book[];
-  updateBookStatus: (id: string, lastReadPage: number) => void;
+  updateBookStatus: (
+    id: string,
+    updateOptions: { lastReadPageIndex: number }
+  ) => void;
   finishBook: (id: string) => void;
 }
 
@@ -11,8 +14,10 @@ export interface Book {
   imageSrc: string;
   pages: Page[];
   finished: boolean;
-  lastReadPage?: number;
-  lastReadAt?: Date;
+  finishedAt?: string;
+  lastReadPageIndex?: number;
+  lastReadAt?: string;
+  purchaseLink?: string;
 }
 
 export enum ContentType {

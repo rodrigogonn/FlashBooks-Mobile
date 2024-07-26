@@ -4,12 +4,13 @@ import { useMemo } from 'react';
 import { View } from 'react-native';
 
 export const Progress = () => {
-  const { currentPageIndex, book } = useReading();
+  const { currentPageIndex, book, completed } = useReading();
   const { readingTheme } = useTheme();
   const percentage = useMemo(() => {
     if (!book) return 0;
-    return (currentPageIndex + 0.1) / book.pages.length;
-  }, []);
+    if (completed) return 1;
+    return currentPageIndex / book.pages.length;
+  }, [book, currentPageIndex]);
 
   return (
     <View
@@ -22,7 +23,7 @@ export const Progress = () => {
       }}>
       <View
         style={{
-          width: `${percentage * 100}%`,
+          width: `${(percentage + 0.05) * 100}%`,
           height: '100%',
           backgroundColor: readingTheme.colors.progress.fill,
         }}

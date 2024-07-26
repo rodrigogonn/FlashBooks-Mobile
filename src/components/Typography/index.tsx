@@ -9,6 +9,7 @@ export enum TypographyVariant {
   Subtitle,
   BookListTitle,
   Small,
+  Button,
 }
 
 interface TypographyProps extends TextProps {
@@ -71,6 +72,12 @@ const useStyleFromVariant = (variant: TypographyVariant) => {
           fontFamily: theme.fontFamily.regular,
           fontSize: 12,
           color: theme.colors.page.text,
+        };
+      case TypographyVariant.Button:
+        return {
+          fontFamily: theme.fontFamily.regular,
+          fontSize: 12,
+          color: theme.colors.button.primary.color,
         };
     }
   }, [variant, theme]);

@@ -3,11 +3,11 @@ import { BookList } from 'components/BookList';
 import { PageLayout } from 'components/PageLayout';
 import { useBooks } from 'contexts/booksContext';
 import { useMemo } from 'react';
-import { RouteParams, StackNavigation } from 'routes';
+import { RouteName, RouteParams, StackNavigation } from 'routes/types';
 import { Categories } from './components/Categories';
 import { categoriesFromIds } from './utils/categoriesFromIds';
 
-export const Discover = ({}: RouteParams<'Discover'>) => {
+export const Discover = ({}: RouteParams<RouteName.Discover>) => {
   const stackNavigation = useNavigation<StackNavigation>();
   const { library } = useBooks();
   const categories = useMemo(() => {
@@ -20,7 +20,7 @@ export const Discover = ({}: RouteParams<'Discover'>) => {
         title="Para você"
         books={library}
         onSeeAll={() =>
-          stackNavigation.navigate('BookList', {
+          stackNavigation.navigate(RouteName.BookList, {
             books: library,
             title: 'Para você',
           })
@@ -30,7 +30,7 @@ export const Discover = ({}: RouteParams<'Discover'>) => {
       <Categories
         categories={categories}
         onSelectCategory={(category) =>
-          stackNavigation.navigate('BookList', {
+          stackNavigation.navigate(RouteName.BookList, {
             title: `${category.emoji} ${category.name}`,
             books: library,
           })
@@ -41,7 +41,7 @@ export const Discover = ({}: RouteParams<'Discover'>) => {
         title="Últimos lançamentos"
         books={library}
         onSeeAll={() =>
-          stackNavigation.navigate('BookList', {
+          stackNavigation.navigate(RouteName.BookList, {
             title: 'Últimos lançamentos',
             books: library,
           })
@@ -52,7 +52,7 @@ export const Discover = ({}: RouteParams<'Discover'>) => {
         title="Para ganhar dinheiro"
         books={library}
         onSeeAll={() =>
-          stackNavigation.navigate('BookList', {
+          stackNavigation.navigate(RouteName.BookList, {
             title: 'Para ganhar dinheiro',
             books: library,
           })

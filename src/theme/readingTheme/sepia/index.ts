@@ -7,6 +7,12 @@ export const readingTheme: ReadingTheme = {
     background: '#f4ecd8',
     title: '#5b4636',
     text: '#5b4636',
+    button: {
+      primary: {
+        background: '#8d6e63',
+        color: '#ffffff',
+      },
+    },
     navigationButton: {
       background: '#e0c9a6',
     },

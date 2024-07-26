@@ -2,14 +2,14 @@ import { useNavigation } from '@react-navigation/native';
 import { BookList } from 'components/BookList';
 import { PageLayout } from 'components/PageLayout';
 import { Book, useBooks } from 'contexts/booksContext';
-import { RouteParams, StackNavigation } from 'routes';
+import { RouteName, RouteParams, StackNavigation } from 'routes/types';
 
-export const Library = ({}: RouteParams<'Library'>) => {
+export const Library = ({}: RouteParams<RouteName.Library>) => {
   const stackNavigation = useNavigation<StackNavigation>();
   const { library } = useBooks();
 
   const handleSelectBook = (book: Book) => {
-    stackNavigation.navigate('Reading', {
+    stackNavigation.navigate(RouteName.Reading, {
       book,
     });
   };

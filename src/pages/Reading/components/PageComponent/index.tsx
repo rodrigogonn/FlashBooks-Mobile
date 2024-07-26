@@ -6,20 +6,21 @@ import {
 } from 'components/ReadingTypography';
 import { ContentType, Page } from 'contexts/booksContext';
 import { useTheme } from 'contexts/themeContext';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
+import { PageContainer } from '../PageContainer';
 
 interface PageProps {
   page: Page;
-  onNext: () => void;
   onPrevious: () => void;
+  onNext: () => void;
   currentPage: number;
   totalPages: number;
 }
 
 export const PageComponent = ({
   page,
-  onNext,
   onPrevious,
+  onNext,
   currentPage,
   totalPages,
 }: PageProps) => {
@@ -28,29 +29,18 @@ export const PageComponent = ({
   const isLastPage = currentPage === totalPages;
 
   return (
-    <ScrollView
-      style={{
-        height: '100%',
-        backgroundColor: readingTheme.colors.background,
-      }}>
+    <PageContainer>
+      <ReadingTypography variant={ReadingTypographyVariant.Title}>
+        {page.title}
+      </ReadingTypography>
+
       <View
         style={{
-          height: '100%',
-          padding: 16,
-          paddingBottom: 64,
-          flex: 1,
           gap: 16,
         }}>
-        <ReadingTypography variant={ReadingTypographyVariant.Title}>
-          {page.title}
-        </ReadingTypography>
-
-        <View
-          style={{
-            gap: 16,
-          }}>
-          {page.content.map((content, index) => {
-            if (content.type === ContentType.PARAGRAPH) {
+        {page.content.map((content, index) => {
+          switch (content.type) {
+            case ContentType.PARAGRAPH:
               return (
                 <ReadingTypography
                   key={index}
@@ -58,50 +48,53 @@ export const PageComponent = ({
                   {content.text}
                 </ReadingTypography>
               );
-            }
-          })}
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 16,
-          }}>
-          <IconButton
-            onPress={onPrevious}
-            disabled={isFirstPage}
-            style={{
-              opacity: isFirstPage ? 0 : 1,
-              backgroundColor: readingTheme.colors.navigationButton.background,
-            }}>
-            <FontAwesome5
-              name="arrow-left"
-              size={16}
-              color={readingTheme.colors.text}
-            />
-          </IconButton>
-
-          <ReadingTypography variant={ReadingTypographyVariant.Paragraph}>
-            {currentPage} de {totalPages}
-          </ReadingTypography>
-
-          <IconButton
-            onPress={onNext}
-            style={{
-              backgroundColor: isLastPage
-                ? readingTheme.colors.progress.fill
-                : readingTheme.colors.navigationButton.background,
-            }}>
-            <FontAwesome5
-              name={isLastPage ? 'check' : 'arrow-right'}
-              size={16}
-              color={readingTheme.colors.text}
-            />
-          </IconButton>
-        </View>
+          }
+        })}
       </View>
-    </ScrollView>
+
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 16,
+        }}>
+        <IconButton
+          onPress={onPrevious}
+          disabled={isFirstPage}
+          style={{
+            opacity: isFirstPage ? 0 : 1,
+            backgroundColor: readingTheme.colors.navigationButton.background,
+          }}>
+          <FontAwesome5
+            name="arrow-left"
+            size={16}
+            color={readingTheme.colors.text}
+          />
+        </IconButton>
+
+        <ReadingTypography variant={ReadingTypographyVariant.Paragraph}>
+          {currentPage} de {totalPages}
+        </ReadingTypography>
+
+        <IconButton
+          onPress={onNext}
+          style={{
+            backgroundColor: isLastPage
+              ? readingTheme.colors.button.primary.background
+              : readingTheme.colors.navigationButton.background,
+          }}>
+          <FontAwesome5
+            name={isLastPage ? 'check' : 'arrow-right'}
+            size={16}
+            color={
+              isLastPage
+                ? readingTheme.colors.button.primary.color
+                : readingTheme.colors.text
+            }
+          />
+        </IconButton>
+      </View>
+    </PageContainer>
   );
 };

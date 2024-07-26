@@ -1,6 +1,7 @@
 import { Typography, TypographyVariant } from 'components/Typography';
 import { Book } from 'contexts/booksContext';
 import { useTheme } from 'contexts/themeContext';
+import { useMemo } from 'react';
 import { Image, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 export interface BookComponentProps {
@@ -18,6 +19,10 @@ export const BookComponent = ({
   onPress,
 }: BookComponentProps) => {
   const { theme } = useTheme();
+  const progress = useMemo(() => {
+    if (book.finished) return 1;
+    return (book.lastReadPageIndex || 0) / book.pages.length;
+  }, [book]);
 
   return (
     <TouchableOpacity
@@ -66,9 +71,7 @@ export const BookComponent = ({
           }}>
           <View
             style={{
-              width: `${
-                (((book.lastReadPage || 1) - 1 + 0.1) / book.pages.length) * 100
-              }%`,
+              width: `${(progress + 0.05) * 100}%`,
               height: '100%',
               backgroundColor: theme.colors.common.progress.fill,
             }}

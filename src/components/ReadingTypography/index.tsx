@@ -7,6 +7,7 @@ export enum ReadingTypographyVariant {
   HeaderTitle,
   Title,
   Paragraph,
+  Button,
 }
 
 interface ReadingTypographyProps extends TextProps {
@@ -56,6 +57,12 @@ const useStyleFromVariant = (variant: ReadingTypographyVariant) => {
           fontFamily: readingTheme.fontFamily.regular,
           fontSize: 16 * textSize,
           color: readingTheme.colors.text,
+        };
+      case ReadingTypographyVariant.Button:
+        return {
+          fontFamily: readingTheme.fontFamily.regular,
+          fontSize: 16,
+          color: readingTheme.colors.button.primary.color,
         };
     }
   }, [variant, readingTheme, textSize]);

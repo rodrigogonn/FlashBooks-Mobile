@@ -1,7 +1,7 @@
 import { BookComponent } from 'components/BookComponent';
 import { PageLayout } from 'components/PageLayout';
 import { Dimensions, View } from 'react-native';
-import { RouteParams } from 'routes';
+import { RouteName, RouteParams } from 'routes/types';
 
 const pageWidth = Dimensions.get('window').width;
 
@@ -9,7 +9,7 @@ export const BookList = ({
   route: {
     params: { title, books },
   },
-}: RouteParams<'BookList'>) => {
+}: RouteParams<RouteName.BookList>) => {
   return (
     <PageLayout
       header={{

@@ -18,6 +18,10 @@ export const theme: Theme = {
       border: '#e0e0e0',
     },
     button: {
+      primary: {
+        background: '#007bff',
+        color: '#ffffff',
+      },
       icon: '#e0e0e0',
     },
     common: {

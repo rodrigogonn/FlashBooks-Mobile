@@ -1,6 +1,8 @@
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { Header } from 'components/Header';
+import { useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
+import { RouteName, RouteParamList } from 'routes/types';
 
 interface PageLayoutProps {
   header?: {
@@ -10,12 +12,15 @@ interface PageLayoutProps {
 }
 
 export const PageLayout = ({ children, header }: PageLayoutProps) => {
-  const route = useRoute();
+  const route = useRoute<RouteProp<RouteParamList>>();
   const { title = route.name } = header || {};
+  const canGoBack = useMemo(() => {
+    return Object.values(RouteName).includes(route.name);
+  }, [route.name]);
 
   return (
     <>
-      <Header title={title} />
+      <Header title={title} canGoBack={canGoBack} />
 
       <ScrollView
         style={{

@@ -15,6 +15,10 @@ export interface Palette {
     border: string;
   };
   button: {
+    primary: {
+      background: string;
+      color: string;
+    };
     icon: string;
   };
   bookList: {
@@ -39,6 +43,12 @@ export interface ReadingPalette {
   background: string;
   title: string;
   text: string;
+  button: {
+    primary: {
+      background: string;
+      color: string;
+    };
+  };
   navigationButton: {
     background: string;
   };

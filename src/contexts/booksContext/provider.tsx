@@ -64,14 +64,20 @@ export const BooksProvider = ({ children }: { children?: React.ReactNode }) => {
     [books]
   );
 
-  const updateBookStatus = (id: string, lastReadPage: number) => {
+  const updateBookStatus = (
+    id: string,
+    { lastReadPageIndex }: { lastReadPageIndex: number }
+  ) => {
+    const currentDate = new Date().toISOString();
+
     setBooks((prevBooks) =>
       prevBooks.map((book) =>
         book.id === id
           ? {
               ...book,
-              lastReadPage,
-              lastReadAt: new Date(),
+              lastReadPageIndex,
+              lastReadAt: currentDate,
+              finished: false,
             }
           : book
       )
@@ -79,12 +85,16 @@ export const BooksProvider = ({ children }: { children?: React.ReactNode }) => {
   };
 
   const finishBook = (id: string) => {
+    const currentDate = new Date().toISOString();
+
     setBooks((prevBooks) =>
       prevBooks.map((book) =>
         book.id === id
           ? {
               ...book,
+              lastReadAt: currentDate,
               finished: true,
+              finishedAt: currentDate,
             }
           : book
       )

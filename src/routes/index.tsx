@@ -1,94 +1,53 @@
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import {
-  BottomTabScreenProps,
-  createBottomTabNavigator,
-} from '@react-navigation/bottom-tabs';
-import {
-  NavigationContainer,
-  NavigatorScreenParams,
-} from '@react-navigation/native';
-import {
-  createNativeStackNavigator,
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from '@react-navigation/native-stack';
-import { Book } from 'contexts/booksContext';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BookList } from 'pages/BookList';
 import { Discover } from 'pages/Home/Discover';
 import { Library } from 'pages/Home/Library';
 import { Reading } from 'pages/Reading';
-
-type TabRouteParamList = {
-  Discover: undefined;
-  Library: undefined;
-};
-
-type StackRouteParamList = {
-  Home: NavigatorScreenParams<TabRouteParamList>;
-  Reading: { book: Book };
-  BookList: { title: string; books: Book[] };
-};
-
-export type RouteParams<
-  RouteName extends keyof (StackRouteParamList & TabRouteParamList)
-> = RouteName extends keyof TabRouteParamList
-  ? BottomTabScreenProps<TabRouteParamList, RouteName>
-  : RouteName extends keyof StackRouteParamList
-  ? NativeStackScreenProps<StackRouteParamList, RouteName>
-  : never;
+import {
+  RouteName,
+  RouteParams,
+  StackRouteParamList,
+  TabRouteParamList,
+} from './types';
 
 const Stack = createNativeStackNavigator<StackRouteParamList>();
 const Tab = createBottomTabNavigator<TabRouteParamList>();
 
-export type StackNavigation = NativeStackNavigationProp<StackRouteParamList>;
-
-export const Home = ({}: RouteParams<'Home'>) => {
+export const Home = ({}: RouteParams<RouteName.Home>) => {
   return (
     <Tab.Navigator
-      initialRouteName="Discover"
+      initialRouteName={RouteName.Discover}
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
+        tabBarIcon: ({ color }) => {
           let iconName;
 
           switch (route.name) {
-            case 'Discover':
+            case RouteName.Discover:
               iconName = 'compass';
               break;
-            case 'Library':
+            case RouteName.Library:
               iconName = 'bookmark';
               break;
           }
 
-          return <FontAwesome5 name={iconName} size={size} color={color} />;
+          return <FontAwesome5 name={iconName} size={24} color={color} />;
         },
         tabBarStyle: {
-          // height: 100, // @TODO ajustar o menu
+          height: 72,
         },
         tabBarItemStyle: {
-          // padding: 16,
+          paddingVertical: 8,
         },
         tabBarLabelStyle: {
-          // padding: 16,
-        },
-        tabBarIconStyle: {
-          // padding: 16,
+          height: 16,
         },
         headerShown: false,
       })}>
-      <Tab.Screen
-        name="Discover"
-        component={Discover}
-        options={{
-          tabBarLabel: 'Explorar',
-        }}
-      />
-      <Tab.Screen
-        name="Library"
-        component={Library}
-        options={{
-          tabBarLabel: 'Biblioteca',
-        }}
-      />
+      <Tab.Screen name={RouteName.Discover} component={Discover} />
+      <Tab.Screen name={RouteName.Library} component={Library} />
     </Tab.Navigator>
   );
 };
@@ -97,13 +56,13 @@ export const Routes = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName={RouteName.Home}
         screenOptions={{
           headerShown: false,
         }}>
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Reading" component={Reading} />
-        <Stack.Screen name="BookList" component={BookList} />
+        <Stack.Screen name={RouteName.Home} component={Home} />
+        <Stack.Screen name={RouteName.Reading} component={Reading} />
+        <Stack.Screen name={RouteName.BookList} component={BookList} />
       </Stack.Navigator>
     </NavigationContainer>
   );
