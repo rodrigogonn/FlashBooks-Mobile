@@ -12,6 +12,7 @@ export enum RouteName {
   Home = 'Home',
   Reading = 'Reading',
   BookList = 'BookList',
+  Login = 'Login',
 }
 
 export type TabRouteParamList = {
@@ -23,6 +24,7 @@ export type StackRouteParamList = {
   [RouteName.Home]: NavigatorScreenParams<TabRouteParamList>;
   [RouteName.Reading]: { book: Book };
   [RouteName.BookList]: { title: string; books: Book[] };
+  [RouteName.Login]: undefined;
 };
 
 export type RouteParamList = TabRouteParamList & StackRouteParamList;

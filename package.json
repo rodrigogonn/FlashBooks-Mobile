@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@expo-google-fonts/comfortaa": "^0.2.3",
+    "@react-native-google-signin/google-signin": "^12.2.1",
     "@react-navigation/bottom-tabs": "^6.6.0",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",

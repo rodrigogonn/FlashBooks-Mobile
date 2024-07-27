@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BookList } from 'pages/BookList';
 import { Discover } from 'pages/Home/Discover';
 import { Library } from 'pages/Home/Library';
+import { Login } from 'pages/Login';
 import { Reading } from 'pages/Reading';
 import {
   RouteName,
@@ -56,13 +57,14 @@ export const Routes = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={RouteName.Home}
+        initialRouteName={RouteName.Login}
         screenOptions={{
           headerShown: false,
         }}>
         <Stack.Screen name={RouteName.Home} component={Home} />
         <Stack.Screen name={RouteName.Reading} component={Reading} />
         <Stack.Screen name={RouteName.BookList} component={BookList} />
+        <Stack.Screen name={RouteName.Login} component={Login} />
       </Stack.Navigator>
     </NavigationContainer>
   );
