@@ -1,54 +1,30 @@
-import {
-  GoogleSignin,
-  isErrorWithCode,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
 import { Button } from 'components/Button';
 import { PageLayout } from 'components/PageLayout';
 import { Typography, TypographyVariant } from 'components/Typography';
+import { useAuth } from 'contexts/authContext';
+import { useState } from 'react';
 import { RouteName, RouteParams } from 'routes/types';
 
-GoogleSignin.configure({
-  scopes: ['https://www.googleapis.com/auth/userinfo.profile'],
-});
-
-const signIn = async () => {
-  console.log('signIn');
-  try {
-    await GoogleSignin.hasPlayServices();
-    const userInfo = await GoogleSignin.signIn();
-    console.log('userInfo', userInfo);
-  } catch (error) {
-    console.error('signIn error', error);
-    if (isErrorWithCode(error)) {
-      switch (error.code) {
-        case statusCodes.SIGN_IN_CANCELLED:
-          // user cancelled the login flow
-          break;
-        case statusCodes.IN_PROGRESS:
-          // operation (eg. sign in) already in progress
-          break;
-        case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-          // play services not available or outdated
-          break;
-        default:
-        // some other error happened
-      }
-    } else {
-      // an error that's not related to google sign in occurred
-    }
-  }
-};
-
 export const Login = ({}: RouteParams<RouteName.Login>) => {
+  const { loginWithGoogle } = useAuth();
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+      await loginWithGoogle();
+    } catch (error) {
+      console.error('Error signing in with Google', error);
+      setLoading(false);
+    }
+  };
+
   return (
     <PageLayout>
-      <Typography variant={TypographyVariant.Title}>Login</Typography>
-      <Button
-        onPress={() => {
-          signIn();
-        }}>
-        <Typography variant={TypographyVariant.Button}>Login</Typography>
+      <Button onPress={handleLogin} disabled={loading}>
+        <Typography variant={TypographyVariant.Button}>
+          {loading ? 'Carregando...' : 'Login'}
+        </Typography>
       </Button>
     </PageLayout>
   );

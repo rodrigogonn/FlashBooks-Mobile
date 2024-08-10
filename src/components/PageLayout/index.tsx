@@ -1,8 +1,11 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Header } from 'components/Header';
 import { useMemo } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { RouteName, RouteParamList } from 'routes/types';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useTheme } from 'contexts/themeContext';
+import { useAuth } from 'contexts/authContext';
 
 interface PageLayoutProps {
   header?: {
@@ -13,6 +16,8 @@ interface PageLayoutProps {
 
 export const PageLayout = ({ children, header }: PageLayoutProps) => {
   const route = useRoute<RouteProp<RouteParamList>>();
+  const { logout } = useAuth();
+  const { theme } = useTheme();
   const { title = route.name } = header || {};
   const canGoBack = useMemo(() => {
     return Object.values(RouteName).includes(route.name);
@@ -20,7 +25,23 @@ export const PageLayout = ({ children, header }: PageLayoutProps) => {
 
   return (
     <>
-      <Header title={title} canGoBack={canGoBack} />
+      <Header
+        title={title}
+        canGoBack={canGoBack}
+        rightComponent={
+          <TouchableOpacity
+            onPress={logout}
+            style={{
+              padding: 4,
+            }}>
+            <MaterialIcons
+              name="logout"
+              size={20}
+              color={theme.colors.page.title}
+            />
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView
         style={{

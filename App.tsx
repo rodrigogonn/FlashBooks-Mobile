@@ -4,6 +4,7 @@ import {
   Comfortaa_700Bold,
   useFonts,
 } from '@expo-google-fonts/comfortaa';
+import { AuthProvider } from 'contexts/authContext';
 import { BooksProvider } from 'contexts/booksContext';
 import { ReadingProvider } from 'contexts/readingContext/provider';
 import { ThemeProvider } from 'contexts/themeContext';
@@ -23,13 +24,15 @@ const App = () => {
 
   return (
     <>
-      <ThemeProvider>
-        <BooksProvider>
-          <ReadingProvider>
-            <Routes />
-          </ReadingProvider>
-        </BooksProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <BooksProvider>
+            <ReadingProvider>
+              <Routes />
+            </ReadingProvider>
+          </BooksProvider>
+        </ThemeProvider>
+      </AuthProvider>
 
       <StatusBar style="auto" />
     </>

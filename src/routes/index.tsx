@@ -1,4 +1,3 @@
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -13,6 +12,8 @@ import {
   StackRouteParamList,
   TabRouteParamList,
 } from './types';
+import { useAuth } from 'contexts/authContext';
+import { homeScreenOptions } from './styles';
 
 const Stack = createNativeStackNavigator<StackRouteParamList>();
 const Tab = createBottomTabNavigator<TabRouteParamList>();
@@ -20,33 +21,8 @@ const Tab = createBottomTabNavigator<TabRouteParamList>();
 export const Home = ({}: RouteParams<RouteName.Home>) => {
   return (
     <Tab.Navigator
-      initialRouteName={RouteName.Discover}
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color }) => {
-          let iconName;
-
-          switch (route.name) {
-            case RouteName.Discover:
-              iconName = 'compass';
-              break;
-            case RouteName.Library:
-              iconName = 'bookmark';
-              break;
-          }
-
-          return <FontAwesome5 name={iconName} size={24} color={color} />;
-        },
-        tabBarStyle: {
-          height: 72,
-        },
-        tabBarItemStyle: {
-          paddingVertical: 8,
-        },
-        tabBarLabelStyle: {
-          height: 16,
-        },
-        headerShown: false,
-      })}>
+      initialRouteName={RouteName.Discover} // @TODO se usuario já tiver livros em andamento, a primeira deveria ser Library
+      screenOptions={homeScreenOptions}>
       <Tab.Screen name={RouteName.Discover} component={Discover} />
       <Tab.Screen name={RouteName.Library} component={Library} />
     </Tab.Navigator>
@@ -54,17 +30,25 @@ export const Home = ({}: RouteParams<RouteName.Home>) => {
 };
 
 export const Routes = () => {
+  const { user: logged } = useAuth();
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={RouteName.Login}
         screenOptions={{
           headerShown: false,
         }}>
-        <Stack.Screen name={RouteName.Home} component={Home} />
-        <Stack.Screen name={RouteName.Reading} component={Reading} />
-        <Stack.Screen name={RouteName.BookList} component={BookList} />
-        <Stack.Screen name={RouteName.Login} component={Login} />
+        {logged ? (
+          <>
+            <Stack.Screen name={RouteName.Home} component={Home} />
+            <Stack.Screen name={RouteName.Reading} component={Reading} />
+            <Stack.Screen name={RouteName.BookList} component={BookList} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name={RouteName.Login} component={Login} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
