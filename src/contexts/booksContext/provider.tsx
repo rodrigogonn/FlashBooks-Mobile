@@ -77,7 +77,20 @@ export const BooksProvider = ({ children }: { children?: React.ReactNode }) => {
               ...book,
               lastReadPageIndex,
               lastReadAt: currentDate,
+            }
+          : book
+      )
+    );
+  };
+
+  const startBook = (id: string) => {
+    setBooks((prevBooks) =>
+      prevBooks.map((book) =>
+        book.id === id
+          ? {
+              ...book,
               finished: false,
+              finishedAt: undefined,
             }
           : book
       )
@@ -107,6 +120,7 @@ export const BooksProvider = ({ children }: { children?: React.ReactNode }) => {
         library,
         updateBookStatus,
         finishBook,
+        startBook,
       }}>
       {children}
     </BooksContext.Provider>

@@ -5,6 +5,7 @@ export interface BooksContextData {
     updateOptions: { lastReadPageIndex: number }
   ) => void;
   finishBook: (id: string) => void;
+  startBook: (id: string) => void;
 }
 
 export interface Book {
