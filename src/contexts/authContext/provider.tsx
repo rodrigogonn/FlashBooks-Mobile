@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
       id: 1,
       name: 'John Doe',
       email: 'JohnDoe@gmail.com',
+      subscription: undefined,
     };
 
     if (mockUser) {
@@ -43,6 +44,9 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
       id: payload.userId,
       name: payload.username,
       email: payload.email,
+      subscription: {
+        name: 'basic',
+      },
     });
   };
 

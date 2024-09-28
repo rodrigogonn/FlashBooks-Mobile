@@ -15,6 +15,7 @@ import {
 import { useAuth } from 'contexts/authContext';
 import { buildHomeScreenOptions } from './styles';
 import { useTheme } from 'contexts/themeContext';
+import { Subscription } from 'pages/Subscription';
 
 const Stack = createNativeStackNavigator<StackRouteParamList>();
 const Tab = createBottomTabNavigator<TabRouteParamList>();
@@ -33,7 +34,7 @@ export const Home = ({}: RouteParams<RouteName.Home>) => {
 };
 
 export const Routes = () => {
-  const { user: logged } = useAuth();
+  const { user } = useAuth();
 
   return (
     <NavigationContainer>
@@ -41,12 +42,21 @@ export const Routes = () => {
         screenOptions={{
           headerShown: false,
         }}>
-        {logged ? (
-          <>
-            <Stack.Screen name={RouteName.Home} component={Home} />
-            <Stack.Screen name={RouteName.Reading} component={Reading} />
-            <Stack.Screen name={RouteName.BookList} component={BookList} />
-          </>
+        {user ? (
+          user.subscription ? (
+            <>
+              <Stack.Screen name={RouteName.Home} component={Home} />
+              <Stack.Screen name={RouteName.Reading} component={Reading} />
+              <Stack.Screen name={RouteName.BookList} component={BookList} />
+            </>
+          ) : (
+            <>
+              <Stack.Screen
+                name={RouteName.Subscription}
+                component={Subscription}
+              />
+            </>
+          )
         ) : (
           <>
             <Stack.Screen name={RouteName.Login} component={Login} />
