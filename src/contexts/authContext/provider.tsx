@@ -12,6 +12,20 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
   const [token, setToken] = useState<string>();
 
   const loginWithGoogle = async () => {
+    const mockUser: User = {
+      id: 1,
+      name: 'John Doe',
+      email: 'JohnDoe@gmail.com',
+    };
+
+    if (mockUser) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      setToken('mockToken');
+      setUser(mockUser);
+      return;
+    }
+
     const { idToken } = await googleAuthService.signIn();
     const {
       data: { token },

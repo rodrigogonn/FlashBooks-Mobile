@@ -9,10 +9,6 @@ export const theme: Theme = {
       title: '#333333',
       text: '#555555',
     },
-    bookList: {
-      text: '#555555',
-      counter: '#bbbbbb',
-    },
     card: {
       background: '#ffffff',
       border: '#e0e0e0',
@@ -24,10 +20,22 @@ export const theme: Theme = {
       },
       icon: '#e0e0e0',
     },
+    bookList: {
+      text: '#555555',
+      counter: '#bbbbbb',
+    },
     common: {
       progress: {
         background: '#cccccc',
         fill: '#007bff',
+      },
+      icon: {
+        normal: '#999999',
+        active: '#007bff',
+        inactive: '#cccccc',
+      },
+      border: {
+        normal: '#e0e0e0',
       },
     },
     modal: {

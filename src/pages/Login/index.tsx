@@ -3,11 +3,15 @@ import { PageLayout } from 'components/PageLayout';
 import { Typography, TypographyVariant } from 'components/Typography';
 import { useAuth } from 'contexts/authContext';
 import { useState } from 'react';
+import { View } from 'react-native';
 import { RouteName, RouteParams } from 'routes/types';
+import { AntDesign } from '@expo/vector-icons';
+import { useTheme } from 'contexts/themeContext';
 
 export const Login = ({}: RouteParams<RouteName.Login>) => {
   const { loginWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
+  const { theme } = useTheme();
 
   const handleLogin = async () => {
     try {
@@ -21,11 +25,39 @@ export const Login = ({}: RouteParams<RouteName.Login>) => {
 
   return (
     <PageLayout>
-      <Button onPress={handleLogin} disabled={loading}>
-        <Typography variant={TypographyVariant.Button}>
-          {loading ? 'Carregando...' : 'Login'}
+      <View
+        style={{
+          display: 'flex',
+          paddingHorizontal: 16,
+          gap: 16,
+          flexGrow: 1,
+        }}>
+        <Typography variant={TypographyVariant.Title}>Bem-vindo</Typography>
+        <Typography variant={TypographyVariant.Body}>
+          Entre com sua conta para continuar
         </Typography>
-      </Button>
+        <Button
+          onPress={handleLogin}
+          disabled={loading}
+          style={{ marginTop: 'auto' }}>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+            }}>
+            <AntDesign
+              name="google"
+              size={24}
+              color={theme.colors.button.primary.color}
+            />
+            <Typography variant={TypographyVariant.Button}>
+              {loading ? 'Carregando...' : 'Entre com Google'}
+            </Typography>
+          </View>
+        </Button>
+      </View>
     </PageLayout>
   );
 };

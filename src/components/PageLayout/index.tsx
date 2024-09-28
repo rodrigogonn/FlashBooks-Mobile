@@ -24,7 +24,11 @@ export const PageLayout = ({ children, header }: PageLayoutProps) => {
   }, [route.name]);
 
   return (
-    <>
+    <View
+      style={{
+        height: '100%',
+        backgroundColor: theme.colors.page.background,
+      }}>
       <Header
         title={title}
         canGoBack={canGoBack}
@@ -46,16 +50,20 @@ export const PageLayout = ({ children, header }: PageLayoutProps) => {
       <ScrollView
         style={{
           height: '100%',
+        }}
+        contentContainerStyle={{
+          flexGrow: 1,
         }}>
         <View
           style={{
             paddingTop: 16,
+            flexGrow: 1,
             paddingBottom: 64,
             gap: 16,
           }}>
           {children}
         </View>
       </ScrollView>
-    </>
+    </View>
   );
 };

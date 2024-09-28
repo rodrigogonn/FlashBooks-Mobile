@@ -30,6 +30,14 @@ export interface Palette {
       background: string;
       fill: string;
     };
+    icon: {
+      normal: string;
+      active: string;
+      inactive: string;
+    };
+    border: {
+      normal: string;
+    };
   };
   modal: {
     backdrop: string;
@@ -64,7 +72,8 @@ export interface Theme {
 }
 
 export enum ThemeName {
-  Main = 'main',
+  Light = 'light',
+  Dark = 'dark',
 }
 
 export interface ReadingTheme {

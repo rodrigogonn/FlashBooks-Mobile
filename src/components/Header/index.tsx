@@ -46,7 +46,7 @@ export const Header = ({
           borderBottomWidth: 1,
           borderColor: readingVersion
             ? readingTheme.colors.navigationButton.background
-            : theme.colors.card.border,
+            : theme.colors.common.border.normal,
         }}>
         <View
           style={{

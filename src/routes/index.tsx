@@ -13,16 +13,19 @@ import {
   TabRouteParamList,
 } from './types';
 import { useAuth } from 'contexts/authContext';
-import { homeScreenOptions } from './styles';
+import { buildHomeScreenOptions } from './styles';
+import { useTheme } from 'contexts/themeContext';
 
 const Stack = createNativeStackNavigator<StackRouteParamList>();
 const Tab = createBottomTabNavigator<TabRouteParamList>();
 
 export const Home = ({}: RouteParams<RouteName.Home>) => {
+  const { theme } = useTheme();
+
   return (
     <Tab.Navigator
       initialRouteName={RouteName.Discover} // @TODO se usuario já tiver livros em andamento, a primeira deveria ser Library
-      screenOptions={homeScreenOptions}>
+      screenOptions={buildHomeScreenOptions({ theme })}>
       <Tab.Screen name={RouteName.Discover} component={Discover} />
       <Tab.Screen name={RouteName.Library} component={Library} />
     </Tab.Navigator>

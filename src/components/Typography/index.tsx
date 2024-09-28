@@ -75,7 +75,7 @@ const useStyleFromVariant = (variant: TypographyVariant) => {
         };
       case TypographyVariant.Button:
         return {
-          fontFamily: theme.fontFamily.regular,
+          fontFamily: theme.fontFamily.bold,
           fontSize: 12,
           color: theme.colors.button.primary.color,
         };
