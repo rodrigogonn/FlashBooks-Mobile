@@ -17,6 +17,8 @@ export const Subscription = ({}: RouteParams<RouteName.Subscription>) => {
     try {
       console.log('Assinar pelo Google');
       // Implementar lógica de assinatura pelo Google aqui
+      // @TODO testar com rota de update subscription
+      // Alterar o subscription localmente aqui com base na resposta
     } catch (error) {
       console.error('Erro ao assinar com Google', error);
     }

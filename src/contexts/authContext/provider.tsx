@@ -1,10 +1,10 @@
-import { env } from 'environment';
-import { AuthContext } from './context';
-import { googleAuthService } from 'services/googleAuth';
 import axios from 'axios';
+import { env } from 'environment';
 import { jwtDecode } from 'jwt-decode';
-import { JwtPayload, User } from './types';
 import { useState } from 'react';
+import { googleAuthService } from 'services/googleAuth';
+import { AuthContext } from './context';
+import { JwtPayload, User } from './types';
 
 export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
   // @TODO salvar no localStorage
@@ -12,12 +12,14 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
   const [token, setToken] = useState<string>();
 
   const loginWithGoogle = async () => {
+    // @TODO criar mock com base na env
     const mockUser: User = {
       id: 1,
       name: 'John Doe',
       email: 'JohnDoe@gmail.com',
       subscription: undefined,
     };
+    // const mockUser: User | undefined = undefined;
 
     if (mockUser) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -44,9 +46,7 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
       id: payload.userId,
       name: payload.username,
       email: payload.email,
-      subscription: {
-        name: 'basic',
-      },
+      subscription: payload.subscription,
     });
   };
 
