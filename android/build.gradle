@@ -8,7 +8,8 @@ buildscript {
         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
         kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.23'
 
-        ndkVersion = "26.1.10909125"
+        ndkVersion = "25.2.9519653"
+        cmakeVersion = "3.22.1"
     }
     repositories {
         google()
@@ -17,6 +18,7 @@ buildscript {
     dependencies {
         classpath('com.android.tools.build:gradle')
         classpath('com.facebook.react:react-native-gradle-plugin')
+        classpath('io.github.cdimascio:dotenv-java:3.0.0')
         classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
     }
 }

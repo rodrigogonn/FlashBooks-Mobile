@@ -13,13 +13,13 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
 
   const loginWithGoogle = async () => {
     // @TODO criar mock com base na env
-    const mockUser: User = {
-      id: 1,
-      name: 'John Doe',
-      email: 'JohnDoe@gmail.com',
-      subscription: undefined,
-    };
-    // const mockUser: User | undefined = undefined;
+    const mockUser: User | undefined =
+      {
+        id: 1,
+        name: 'John Doe',
+        email: 'JohnDoe@gmail.com',
+        subscription: undefined,
+      } && undefined;
 
     if (mockUser) {
       await new Promise((resolve) => setTimeout(resolve, 2000));

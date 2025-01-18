@@ -5,6 +5,8 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
+    "android:build:release": "android/gradlew bundleRelease -p android",
+    "android:clean": "android/gradlew clean -p android",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "ts:check": "tsc",

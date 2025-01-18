@@ -2,7 +2,14 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
+import io.github.cdimascio.dotenv.Dotenv
+
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+
+def dotenv = Dotenv.configure()
+    .directory(projectRoot.toString())
+    .filename(".env")
+    .load()
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -91,6 +98,11 @@ android {
         versionCode 1
         versionName "1.0.0"
     }
+    externalNativeBuild {
+        cmake {
+            version rootProject.ext.cmakeVersion
+        }
+    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -98,15 +110,21 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file(dotenv["STORE_FILE"])
+            storePassword dotenv["STORE_PASSWORD"]
+            keyAlias dotenv["KEY_ALIAS"]
+            keyPassword dotenv["KEY_PASSWORD"]
+        }
     }
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
+            signingConfig dotenv["KEYSTORE_ENV"] == "debug" 
+                ? signingConfigs.debug 
+                : signingConfigs.release
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
