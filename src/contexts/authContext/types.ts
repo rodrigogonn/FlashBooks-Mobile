@@ -18,14 +18,14 @@ export interface Subscription {
 }
 
 export interface JwtPayload {
-  userId: number;
+  userId: string;
   username: string;
   email: string;
   subscription?: Subscription;
 }
 
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   subscription?: Subscription;

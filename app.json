@@ -25,6 +25,10 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-font", "@react-native-google-signin/google-signin"]
+    "plugins": [
+      "expo-font",
+      "@react-native-google-signin/google-signin",
+      "react-native-iap"
+    ]
   }
 }
