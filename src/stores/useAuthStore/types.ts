@@ -5,6 +5,7 @@ export interface AuthContextData {
   token?: string;
 }
 
+// @TODO ajustar essa tipagem aqui
 export interface Subscription {
   productId: string;
   purchaseToken: string;

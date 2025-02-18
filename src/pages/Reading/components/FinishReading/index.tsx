@@ -4,11 +4,12 @@ import {
   ReadingTypography,
   ReadingTypographyVariant,
 } from 'components/ReadingTypography';
-import { useReading } from 'contexts/readingContext/useReading';
-import { useTheme } from 'contexts/themeContext';
+import { useReading } from 'hooks/useReading';
+import { useTheme } from 'hooks/useTheme';
 import { Linking, View } from 'react-native';
 import { RouteName, StackNavigation } from 'routes/types';
 import { PageContainer } from '../PageContainer';
+import React from 'react';
 
 export const FinishReading = () => {
   const { book } = useReading();

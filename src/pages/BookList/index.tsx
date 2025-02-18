@@ -1,7 +1,9 @@
+import { useNavigation } from '@react-navigation/native';
 import { BookComponent } from 'components/BookComponent';
 import { PageLayout } from 'components/PageLayout';
 import { Dimensions, View } from 'react-native';
-import { RouteName, RouteParams } from 'routes/types';
+import { RouteName, RouteParams, StackNavigation } from 'routes/types';
+import { Book } from 'stores/useBooksStore/types';
 
 const pageWidth = Dimensions.get('window').width;
 
@@ -10,6 +12,14 @@ export const BookList = ({
     params: { title, books },
   },
 }: RouteParams<RouteName.BookList>) => {
+  const stackNavigation = useNavigation<StackNavigation>();
+
+  const handleSelectBook = (book: Book) => {
+    stackNavigation.navigate(RouteName.Reading, {
+      book,
+    });
+  };
+
   return (
     <PageLayout
       header={{
@@ -30,6 +40,7 @@ export const BookList = ({
             style={{
               flexBasis: pageWidth / 3 - 64 / 3,
             }}
+            onPress={() => handleSelectBook(book)}
           />
         ))}
       </View>

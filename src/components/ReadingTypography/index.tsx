@@ -1,5 +1,5 @@
-import { useReading } from 'contexts/readingContext/useReading';
-import { useTheme } from 'contexts/themeContext';
+import { useReading } from 'hooks/useReading';
+import { useTheme } from 'hooks/useTheme';
 import { useMemo } from 'react';
 import { Text, TextProps, TextStyle } from 'react-native';
 

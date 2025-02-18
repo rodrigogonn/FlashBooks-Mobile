@@ -4,7 +4,7 @@ import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import { Book } from 'contexts/booksContext';
+import { Book } from 'stores/useBooksStore/types';
 
 export enum RouteName {
   Discover = 'Explorar',

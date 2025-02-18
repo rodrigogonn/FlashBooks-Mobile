@@ -1,8 +1,9 @@
 import { Typography, TypographyVariant } from 'components/Typography';
-import { Book } from 'contexts/booksContext';
-import { useTheme } from 'contexts/themeContext';
+import { useTheme } from 'hooks/useTheme';
 import { useMemo } from 'react';
-import { Image, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Book } from 'stores/useBooksStore/types';
+import FastImage from 'react-native-fast-image';
 
 export interface BookComponentProps {
   book: Book;
@@ -10,6 +11,7 @@ export interface BookComponentProps {
   small?: boolean;
   style?: ViewStyle;
   onPress?: () => void;
+  onLongPress?: () => void;
 }
 export const BookComponent = ({
   book,
@@ -17,16 +19,18 @@ export const BookComponent = ({
   small = false,
   style,
   onPress,
+  onLongPress,
 }: BookComponentProps) => {
   const { theme } = useTheme();
   const progress = useMemo(() => {
     if (book.finished) return 1;
-    return (book.lastReadPageIndex || 0) / book.pages.length;
+    return (book.lastReadPageIndex || 0) / book.chapters.length;
   }, [book]);
 
   return (
     <TouchableOpacity
       onPress={onPress}
+      onLongPress={onLongPress}
       style={{
         width: 155 * (small ? 0.6 : 1),
         ...style,
@@ -39,13 +43,17 @@ export const BookComponent = ({
           borderRadius: 8,
           overflow: 'hidden',
         }}>
-        <Image
+        <FastImage
           style={{
             height: '100%',
             width: '100%',
-            objectFit: 'cover',
           }}
-          src={book.imageSrc}
+          source={{
+            uri: book.imageUrl,
+            priority: FastImage.priority.normal,
+            cache: FastImage.cacheControl.immutable,
+          }}
+          resizeMode={FastImage.resizeMode.cover}
         />
         <View
           style={{

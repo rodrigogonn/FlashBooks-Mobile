@@ -1,5 +1,5 @@
 import { Typography, TypographyVariant } from 'components/Typography';
-import { useTheme } from 'contexts/themeContext';
+import { useTheme } from 'hooks/useTheme';
 import { Text, TouchableOpacity } from 'react-native';
 import { Category } from 'types/category.interface';
 

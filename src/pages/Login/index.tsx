@@ -1,15 +1,15 @@
 import { Button } from 'components/Button';
 import { PageLayout } from 'components/PageLayout';
 import { Typography, TypographyVariant } from 'components/Typography';
-import { useAuth } from 'contexts/authContext';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { RouteName, RouteParams } from 'routes/types';
 import { AntDesign } from '@expo/vector-icons';
-import { useTheme } from 'contexts/themeContext';
+import { useTheme } from 'hooks/useTheme';
+import { useAuthStore } from 'stores/useAuthStore';
 
 export const Login = ({}: RouteParams<RouteName.Login>) => {
-  const { loginWithGoogle } = useAuth();
+  const loginWithGoogle = useAuthStore((state) => state.loginWithGoogle);
   const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
 

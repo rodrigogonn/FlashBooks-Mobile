@@ -30,6 +30,7 @@ yarn-error.*
 
 # dotenv environment variables file
 .env
+.env.local
 .env.staging
 .env.production
 

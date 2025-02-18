@@ -1,27 +1,25 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Header } from 'components/Header';
-import { useMemo } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { RouteName, RouteParamList } from 'routes/types';
+import { RouteParamList } from 'routes/types';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from 'contexts/themeContext';
-import { useAuth } from 'contexts/authContext';
+import { useTheme } from 'hooks/useTheme';
+import { useAuthStore } from 'stores/useAuthStore';
 
 interface PageLayoutProps {
   header?: {
     title?: string;
+    canGoBack?: boolean;
   };
   children?: React.ReactNode;
 }
 
 export const PageLayout = ({ children, header }: PageLayoutProps) => {
   const route = useRoute<RouteProp<RouteParamList>>();
-  const { logout } = useAuth();
+  const logout = useAuthStore((state) => state.logout);
   const { theme } = useTheme();
-  const { title = route.name } = header || {};
-  const canGoBack = useMemo(() => {
-    return Object.values(RouteName).includes(route.name);
-  }, [route.name]);
+  const { title = route.name, canGoBack = true } = header || {};
+  const loggedIn = useAuthStore((state) => state.user);
 
   return (
     <View
@@ -33,17 +31,19 @@ export const PageLayout = ({ children, header }: PageLayoutProps) => {
         title={title}
         canGoBack={canGoBack}
         rightComponent={
-          <TouchableOpacity
-            onPress={logout}
-            style={{
-              padding: 4,
-            }}>
-            <MaterialIcons
-              name="logout"
-              size={20}
-              color={theme.colors.page.title}
-            />
-          </TouchableOpacity>
+          loggedIn && (
+            <TouchableOpacity
+              onPress={logout}
+              style={{
+                padding: 4,
+              }}>
+              <MaterialIcons
+                name="logout"
+                size={20}
+                color={theme.colors.page.title}
+              />
+            </TouchableOpacity>
+          )
         }
       />
 

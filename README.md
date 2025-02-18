@@ -1,4 +1,4 @@
 # Versões usadas
 
-- openjdk 23.0.1
+- jdk 17.0.12
 - Node v22.12.0

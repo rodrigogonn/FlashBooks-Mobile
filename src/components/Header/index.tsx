@@ -5,7 +5,8 @@ import {
   ReadingTypographyVariant,
 } from 'components/ReadingTypography';
 import { Typography, TypographyVariant } from 'components/Typography';
-import { useTheme } from 'contexts/themeContext';
+import { useTheme } from 'hooks/useTheme';
+import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

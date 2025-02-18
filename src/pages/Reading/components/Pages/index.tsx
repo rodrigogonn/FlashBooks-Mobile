@@ -1,4 +1,4 @@
-import { useReading } from 'contexts/readingContext/useReading';
+import { useReading } from 'hooks/useReading';
 import { useRef } from 'react';
 import { Dimensions } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
@@ -24,21 +24,21 @@ export const Pages = () => {
         offset: pageWidth * index,
         index,
       })}
-      data={[...Array(book.pages.length + 1).keys()]}
+      data={[...Array(book.chapters.length + 1).keys()]}
       renderItem={({ index }) => {
-        const isLastPage = index === book.pages.length - 1;
-        const isFinishPage = index === book.pages.length;
+        const isLastPage = index === book.chapters.length - 1;
+        const isFinishPage = index === book.chapters.length;
 
         if (isFinishPage) {
           return <FinishReading />;
         }
 
-        const page = book.pages[index];
+        const chapter = book.chapters[index]!;
 
         return (
           <PageComponent
             key={index}
-            page={page}
+            chapter={chapter}
             onNext={async () => {
               carouselRef.current?.snapToItem(index + 1);
               if (isLastPage) {
@@ -51,7 +51,7 @@ export const Pages = () => {
               }
             }}
             currentPage={index + 1}
-            totalPages={book.pages.length}
+            totalPages={book.chapters.length}
           />
         );
       }}

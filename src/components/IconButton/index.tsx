@@ -1,4 +1,4 @@
-import { useTheme } from 'contexts/themeContext';
+import { useTheme } from 'hooks/useTheme';
 import { ReactNode } from 'react';
 import {
   TouchableOpacity,

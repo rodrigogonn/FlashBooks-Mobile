@@ -1,8 +1,8 @@
 import { BookComponent } from 'components/BookComponent';
 import { Typography, TypographyVariant } from 'components/Typography';
-import { Book } from 'contexts/booksContext';
-import { useTheme } from 'contexts/themeContext';
+import { useTheme } from 'hooks/useTheme';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { Book } from 'stores/useBooksStore/types';
 
 interface BookListProps {
   title: string;
@@ -12,6 +12,7 @@ interface BookListProps {
   withProgress?: boolean;
   small?: boolean;
   onSelect?: (book: Book) => void;
+  onLongPress?: (book: Book) => void;
 }
 
 export const BookList = ({
@@ -22,6 +23,7 @@ export const BookList = ({
   withProgress,
   small,
   onSelect,
+  onLongPress,
 }: BookListProps) => {
   const { theme } = useTheme();
 
@@ -98,6 +100,7 @@ export const BookList = ({
               small={small}
               withProgress={withProgress}
               onPress={() => onSelect?.(book)}
+              onLongPress={onLongPress ? () => onLongPress(book) : undefined}
             />
           ))}
         </View>

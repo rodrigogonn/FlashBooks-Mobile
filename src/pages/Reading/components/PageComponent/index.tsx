@@ -4,13 +4,13 @@ import {
   ReadingTypography,
   ReadingTypographyVariant,
 } from 'components/ReadingTypography';
-import { ContentType, Page } from 'contexts/booksContext';
-import { useTheme } from 'contexts/themeContext';
+import { Chapter, ContentType } from 'stores/useBooksStore/types';
+import { useTheme } from 'hooks/useTheme';
 import { View } from 'react-native';
 import { PageContainer } from '../PageContainer';
 
 interface PageProps {
-  page: Page;
+  chapter: Chapter;
   onPrevious: () => void;
   onNext: () => void;
   currentPage: number;
@@ -18,7 +18,7 @@ interface PageProps {
 }
 
 export const PageComponent = ({
-  page,
+  chapter,
   onPrevious,
   onNext,
   currentPage,
@@ -31,14 +31,15 @@ export const PageComponent = ({
   return (
     <PageContainer>
       <ReadingTypography variant={ReadingTypographyVariant.Title}>
-        {page.title}
+        {chapter.title}
       </ReadingTypography>
 
       <View
         style={{
           gap: 16,
+          flexGrow: 1,
         }}>
-        {page.content.map((content, index) => {
+        {chapter.content.map((content, index) => {
           switch (content.type) {
             case ContentType.PARAGRAPH:
               return (

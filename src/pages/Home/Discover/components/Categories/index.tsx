@@ -1,5 +1,5 @@
 import { Typography, TypographyVariant } from 'components/Typography';
-import { useTheme } from 'contexts/themeContext';
+import { useTheme } from 'hooks/useTheme';
 import { useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Category } from 'types/category.interface';

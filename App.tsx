@@ -4,12 +4,11 @@ import {
   Comfortaa_700Bold,
   useFonts,
 } from '@expo-google-fonts/comfortaa';
-import { AuthProvider } from 'contexts/authContext';
-import { BooksProvider } from 'contexts/booksContext';
-import { ReadingProvider } from 'contexts/readingContext/provider';
-import { ThemeProvider } from 'contexts/themeContext';
 import { StatusBar } from 'expo-status-bar';
+import { useTheme } from 'hooks/useTheme';
+import React from 'react';
 import { Routes } from 'routes';
+import { ThemeName } from 'theme/types';
 
 const App = () => {
   let [fontsLoaded] = useFonts({
@@ -17,6 +16,7 @@ const App = () => {
     Comfortaa_400Regular,
     Comfortaa_700Bold,
   });
+  const { theme } = useTheme();
 
   if (!fontsLoaded) {
     return null;
@@ -24,17 +24,9 @@ const App = () => {
 
   return (
     <>
-      <AuthProvider>
-        <ThemeProvider>
-          <BooksProvider>
-            <ReadingProvider>
-              <Routes />
-            </ReadingProvider>
-          </BooksProvider>
-        </ThemeProvider>
-      </AuthProvider>
+      <Routes />
 
-      <StatusBar style="auto" />
+      <StatusBar style={theme.name === ThemeName.Dark ? 'light' : 'dark'} />
     </>
   );
 };

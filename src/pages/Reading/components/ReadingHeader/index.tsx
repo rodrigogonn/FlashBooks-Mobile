@@ -1,8 +1,8 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Header, HeaderVariant } from 'components/Header';
-import { useReading } from 'contexts/readingContext/useReading';
-import { useTheme } from 'contexts/themeContext';
+import { useReading } from 'hooks/useReading';
+import { useTheme } from 'hooks/useTheme';
 import { TouchableOpacity } from 'react-native';
 import { RouteName, StackNavigation } from 'routes/types';
 
