@@ -2,7 +2,7 @@ import { Typography, TypographyVariant } from 'components/Typography';
 import { useTheme } from 'hooks/useTheme';
 import { useMemo } from 'react';
 import { TouchableOpacity, View, ViewStyle } from 'react-native';
-import { Book } from 'stores/useBooksStore/types';
+import { Book } from 'providers/BooksProvider/types';
 import FastImage from 'react-native-fast-image';
 
 export interface BookComponentProps {

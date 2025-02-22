@@ -1,11 +1,16 @@
-import { useEffect } from 'react';
-import { useReadingStore } from 'stores/useReadingStore';
+import { ReadingContext } from 'providers/ReadingProvider';
+import { useContext, useEffect } from 'react';
 
 interface UseReadingProps {
   onComplete?: () => void;
 }
 
 export const useReading = (params?: UseReadingProps) => {
+  const context = useContext(ReadingContext);
+  if (!context) {
+    throw new Error('useReading deve ser usado dentro do ReadingProvider');
+  }
+
   const {
     book,
     currentPageIndex,
@@ -19,7 +24,8 @@ export const useReading = (params?: UseReadingProps) => {
     closeAdjustments,
     addCompleteListener,
     removeCompleteListener,
-  } = useReadingStore();
+  } = context;
+
   const completed = book ? currentPageIndex >= book.chapters.length : false;
   const { onComplete } = params || {};
 
@@ -30,7 +36,7 @@ export const useReading = (params?: UseReadingProps) => {
     return () => {
       removeCompleteListener(onComplete);
     };
-  }, [onComplete]);
+  }, [onComplete, addCompleteListener, removeCompleteListener]);
 
   return {
     book,

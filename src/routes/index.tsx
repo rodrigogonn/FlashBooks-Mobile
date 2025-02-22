@@ -13,19 +13,27 @@ import {
   TabRouteParamList,
 } from './types';
 import { buildHomeScreenOptions } from './styles';
-import { Subscription } from 'pages/Subscription';
+import { Subscription as SubscriptionPage } from 'pages/Subscription';
 import { useAuthStore } from 'stores/useAuthStore';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'hooks/useTheme';
 import { booksService } from 'services/books';
-import { useBooksStore } from 'stores/useBooksStore';
+import { subscriptionsService } from 'services/subscriptions';
+import { Subscription } from 'services/subscriptions/types';
+import { useBooks } from 'hooks/useBooks';
+import { BooksProvider } from 'providers/BooksProvider';
+import { ReadingProvider } from 'providers/ReadingProvider';
+import { StatusBar } from 'expo-status-bar';
+import { ThemeName } from 'theme/types';
+import { LoadingPage } from 'components/LoadingPage';
+import { ErrorPage } from 'components/ErrorPage';
 
 const Stack = createNativeStackNavigator<StackRouteParamList>();
 const Tab = createBottomTabNavigator<TabRouteParamList>();
 
 export const Home = ({}: RouteParams<RouteName.Home>) => {
   const { theme } = useTheme();
-  const { books } = useBooksStore();
+  const { books } = useBooks();
 
   const inProgressBooks = useMemo(() => {
     return books.filter((book) => book.lastReadAt);
@@ -43,54 +51,97 @@ export const Home = ({}: RouteParams<RouteName.Home>) => {
   );
 };
 
-export const Routes = () => {
-  const user = useAuthStore((state) => state.user);
+export const LoggedInRoutes = () => {
+  const { lastSync, syncData } = useBooks();
 
-  const lastSync = useBooksStore((state) => state.lastSync);
-  const syncData = useBooksStore((state) => state.syncData);
+  const [activeSubscription, setActiveSubscription] = useState<Subscription>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
-    const sync = async () => {
-      if (!user) return;
+  const loadData = async () => {
+    try {
+      setIsLoading(true);
+      setError(false);
+      // @TODO criar um provider pra assinatura para que verifique a expiração para poder usar offline
+      const { subscriptions } = await subscriptionsService.getSubscriptions();
+      const activeSubscription = subscriptions[0];
+
+      setActiveSubscription(activeSubscription);
+
+      if (!activeSubscription) return;
 
       const syncResponse = await booksService.getNotSyncedData({
         lastSync,
       });
 
       syncData(syncResponse);
-    };
+    } catch (error) {
+      console.error(error);
+      setError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    sync();
-  }, [user]);
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
+
+  if (error) {
+    return <ErrorPage onRetry={loadData} />;
+  }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          animation: 'slide_from_bottom',
-        }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_bottom',
+      }}>
+      {activeSubscription ? (
+        <>
+          <Stack.Screen name={RouteName.Home} component={Home} />
+          <Stack.Screen name={RouteName.Reading} component={Reading} />
+          <Stack.Screen name={RouteName.BookList} component={BookList} />
+        </>
+      ) : (
+        <Stack.Screen
+          name={RouteName.Subscription}
+          component={SubscriptionPage}
+        />
+      )}
+    </Stack.Navigator>
+  );
+};
+
+export const Routes = () => {
+  const user = useAuthStore((state) => state.user);
+  const { theme } = useTheme();
+
+  return (
+    <>
+      <NavigationContainer>
         {user ? (
-          user.subscription ? (
-            <>
-              <Stack.Screen name={RouteName.Home} component={Home} />
-              <Stack.Screen name={RouteName.Reading} component={Reading} />
-              <Stack.Screen name={RouteName.BookList} component={BookList} />
-            </>
-          ) : (
-            <>
-              <Stack.Screen
-                name={RouteName.Subscription}
-                component={Subscription}
-              />
-            </>
-          )
+          <BooksProvider userId={user.id}>
+            <ReadingProvider userId={user.id}>
+              <LoggedInRoutes />
+            </ReadingProvider>
+          </BooksProvider>
         ) : (
-          <>
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}>
             <Stack.Screen name={RouteName.Login} component={Login} />
-          </>
+          </Stack.Navigator>
         )}
-      </Stack.Navigator>
-    </NavigationContainer>
+      </NavigationContainer>
+
+      <StatusBar style={theme.name === ThemeName.Dark ? 'light' : 'dark'} />
+    </>
   );
 };

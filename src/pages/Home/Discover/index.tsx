@@ -1,17 +1,17 @@
 import { useNavigation } from '@react-navigation/native';
 import { BookList } from 'components/BookList';
 import { PageLayout } from 'components/PageLayout';
-import { useBooksStore } from 'stores/useBooksStore';
 import { useMemo } from 'react';
 import { RouteName, RouteParams, StackNavigation } from 'routes/types';
 import { Categories } from './components/Categories';
 import { categories } from 'constants/categories';
-import { Book, BookCollection } from 'stores/useBooksStore/types';
+import { Book, BookCollection } from 'providers/BooksProvider/types';
 import { DateTime } from 'luxon';
+import { useBooks } from 'hooks/useBooks';
 
-export const Discover = ({}: RouteParams<RouteName.Discover>) => {
+export const Discover = ({ route }: RouteParams<RouteName.Discover>) => {
   const stackNavigation = useNavigation<StackNavigation>();
-  const { books, collections } = useBooksStore();
+  const { books, collections } = useBooks();
 
   const booksByCategory: {
     [categoryId: number]: Book[];
@@ -41,9 +41,9 @@ export const Discover = ({}: RouteParams<RouteName.Discover>) => {
     books: Book[];
   }> = useMemo(() => {
     return collections.map((collection) => {
-      const collectionBooks = books.filter((book) =>
-        collection.books.includes(book.id)
-      );
+      const collectionBooks = collection.books
+        .map((bookId) => books.find((book) => book.id === bookId))
+        .filter((book): book is Book => !!book);
 
       return {
         collection,
@@ -69,7 +69,7 @@ export const Discover = ({}: RouteParams<RouteName.Discover>) => {
   };
 
   return (
-    <PageLayout header={{ canGoBack: false }}>
+    <PageLayout header={{ title: route.name }}>
       {/* <BookList
         title="Para você"
         books={books}

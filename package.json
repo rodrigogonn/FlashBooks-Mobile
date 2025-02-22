@@ -5,11 +5,12 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
-    "android:build:release": "android/gradlew bundleRelease -p android",
+    "android:build:staging": "cross-env ENVFILE=.env.staging android/gradlew bundleRelease -p android",
+    "android:build:production": "cross-env ENVFILE=.env.production android/gradlew bundleRelease -p android",
     "android:clean": "android/gradlew clean -p android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "ts:check": "tsc",
+    "typecheck": "tsc",
     "postinstall": "patch-package"
   },
   "dependencies": {
@@ -20,6 +21,7 @@
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
     "axios": "^1.7.3",
+    "cross-env": "^7.0.3",
     "deprecated-react-native-prop-types": "^5.0.0",
     "expo": "~51.0.39",
     "expo-font": "~12.0.10",

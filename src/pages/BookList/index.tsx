@@ -3,7 +3,7 @@ import { BookComponent } from 'components/BookComponent';
 import { PageLayout } from 'components/PageLayout';
 import { Dimensions, View } from 'react-native';
 import { RouteName, RouteParams, StackNavigation } from 'routes/types';
-import { Book } from 'stores/useBooksStore/types';
+import { Book } from 'providers/BooksProvider/types';
 
 const pageWidth = Dimensions.get('window').width;
 
@@ -24,6 +24,7 @@ export const BookList = ({
     <PageLayout
       header={{
         title,
+        canGoBack: true,
       }}>
       <View
         style={{

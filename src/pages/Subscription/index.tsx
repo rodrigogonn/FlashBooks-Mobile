@@ -5,7 +5,9 @@ import React from 'react';
 import { View } from 'react-native';
 import { RouteName, RouteParams } from 'routes/types';
 
-export const Subscription = ({}: RouteParams<RouteName.Subscription>) => {
+export const Subscription = ({
+  route,
+}: RouteParams<RouteName.Subscription>) => {
   const { theme } = useTheme();
 
   const handleSubscribe = (plan: string) => {
@@ -24,7 +26,7 @@ export const Subscription = ({}: RouteParams<RouteName.Subscription>) => {
   };
 
   return (
-    <PageLayout>
+    <PageLayout header={{ title: route.name }}>
       <View
         style={{
           display: 'flex',

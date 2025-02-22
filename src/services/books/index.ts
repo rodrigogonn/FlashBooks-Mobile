@@ -1,5 +1,5 @@
 import { authenticatedApi } from 'core/api/authenticatedApi';
-import { Book, BookCollection } from 'stores/useBooksStore/types';
+import { Book, BookCollection } from 'providers/BooksProvider/types';
 
 export const booksService = {
   getNotSyncedData: async ({ lastSync }: { lastSync?: string }) => {

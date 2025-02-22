@@ -3,7 +3,7 @@ import { googleAuthService } from 'services/googleAuth';
 
 export const authService = {
   loginWithGoogle: async () => {
-    const { idToken } = await googleAuthService.signIn();
+    const { idToken, user } = await googleAuthService.signIn();
     const response = await api.post<{ token: string }>(
       '/api/auth/loginWithGoogle',
       {
@@ -11,6 +11,6 @@ export const authService = {
       }
     );
 
-    return response.data;
+    return { ...response.data, user };
   },
 };

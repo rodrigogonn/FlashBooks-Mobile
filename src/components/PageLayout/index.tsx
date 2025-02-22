@@ -1,7 +1,5 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
 import { Header } from 'components/Header';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { RouteParamList } from 'routes/types';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from 'hooks/useTheme';
 import { useAuthStore } from 'stores/useAuthStore';
@@ -15,10 +13,9 @@ interface PageLayoutProps {
 }
 
 export const PageLayout = ({ children, header }: PageLayoutProps) => {
-  const route = useRoute<RouteProp<RouteParamList>>();
   const logout = useAuthStore((state) => state.logout);
   const { theme } = useTheme();
-  const { title = route.name, canGoBack = true } = header || {};
+  const { title, canGoBack } = header || {};
   const loggedIn = useAuthStore((state) => state.user);
 
   return (

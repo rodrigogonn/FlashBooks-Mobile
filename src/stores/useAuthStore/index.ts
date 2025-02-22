@@ -3,8 +3,9 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { googleAuthService } from 'services/googleAuth';
 import { jwtDecode } from 'jwt-decode';
 import { authService } from 'services/auth';
-import { JwtPayload, Subscription, User } from './types';
+import { JwtPayload, User } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FastImage from 'react-native-fast-image';
 
 interface AuthState {
   token: string | null;
@@ -19,23 +20,14 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       user: null,
       loginWithGoogle: async () => {
-        const test = false;
-
-        if (test) {
-          set({
-            token: 'test',
-            user: {
-              id: 'test',
-              name: 'test',
-              email: 'test',
-              subscription: {} as Subscription,
-            },
-          });
-          return;
-        }
-
-        const { token } = await authService.loginWithGoogle();
+        const { token, user } = await authService.loginWithGoogle();
         const payload = jwtDecode<JwtPayload>(token);
+
+        if (user.photo) {
+          FastImage.preload([
+            { uri: user.photo, cache: FastImage.cacheControl.immutable },
+          ]);
+        }
 
         set({
           token,
@@ -43,7 +35,7 @@ export const useAuthStore = create<AuthState>()(
             id: payload.userId,
             name: payload.username,
             email: payload.email,
-            subscription: {} as Subscription, // @TODO: Como adiciono a subscription? E tipar direito ela de acordo com back
+            photo: user.photo || undefined,
           },
         });
       },

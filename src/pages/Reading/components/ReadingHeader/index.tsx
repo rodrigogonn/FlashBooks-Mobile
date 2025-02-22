@@ -13,7 +13,7 @@ export const ReadingHeader = () => {
 
   return (
     <Header
-      title={book?.title!}
+      title={book?.title}
       variant={HeaderVariant.Reading}
       leftComponent={
         <TouchableOpacity

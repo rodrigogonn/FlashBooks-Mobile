@@ -2,7 +2,7 @@ import { BookComponent } from 'components/BookComponent';
 import { Typography, TypographyVariant } from 'components/Typography';
 import { useTheme } from 'hooks/useTheme';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { Book } from 'stores/useBooksStore/types';
+import { Book } from 'providers/BooksProvider/types';
 
 interface BookListProps {
   title: string;

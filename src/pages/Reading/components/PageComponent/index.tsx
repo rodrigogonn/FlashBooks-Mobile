@@ -4,7 +4,7 @@ import {
   ReadingTypography,
   ReadingTypographyVariant,
 } from 'components/ReadingTypography';
-import { Chapter, ContentType } from 'stores/useBooksStore/types';
+import { Chapter, ContentType } from 'providers/BooksProvider/types';
 import { useTheme } from 'hooks/useTheme';
 import { View } from 'react-native';
 import { PageContainer } from '../PageContainer';

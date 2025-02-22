@@ -2,9 +2,9 @@ import { PageLayout } from 'components/PageLayout';
 import { Typography, TypographyVariant } from 'components/Typography';
 import { View } from 'react-native';
 
-export const EmptyLibrary = () => {
+export const EmptyLibrary = ({ headerTitle }: { headerTitle: string }) => {
   return (
-    <PageLayout>
+    <PageLayout header={{ title: headerTitle }}>
       <View
         style={{
           flex: 1,

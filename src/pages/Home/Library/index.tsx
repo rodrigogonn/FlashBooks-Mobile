@@ -1,9 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import { BookList } from 'components/BookList';
 import { PageLayout } from 'components/PageLayout';
-import { Book } from 'stores/useBooksStore/types';
+import { Book } from 'providers/BooksProvider/types';
 import { RouteName, RouteParams, StackNavigation } from 'routes/types';
-import { useBooksStore } from 'stores/useBooksStore';
 import { useMemo, useState } from 'react';
 import { EmptyLibrary } from './components/EmptyLibrary';
 import { Modal } from 'components/Modal';
@@ -11,10 +10,11 @@ import { Typography, TypographyVariant } from 'components/Typography';
 import { Button } from 'components/Button';
 import { View } from 'react-native';
 import React from 'react';
+import { useBooks } from 'hooks/useBooks';
 
-export const Library = ({}: RouteParams<RouteName.Library>) => {
+export const Library = ({ route }: RouteParams<RouteName.Library>) => {
   const stackNavigation = useNavigation<StackNavigation>();
-  const { books, removeFromLibrary } = useBooksStore();
+  const { books, removeFromLibrary } = useBooks();
 
   const [bookMenuContext, setBookMenuContext] = useState<Book>();
 
@@ -43,11 +43,11 @@ export const Library = ({}: RouteParams<RouteName.Library>) => {
   };
 
   if (inProgressBooks.length === 0 && finishedBooks.length === 0) {
-    return <EmptyLibrary />;
+    return <EmptyLibrary headerTitle={route.name} />;
   }
 
   return (
-    <PageLayout header={{ canGoBack: false }}>
+    <PageLayout header={{ title: route.name }}>
       {inProgressBooks.length > 0 && (
         <BookList
           books={inProgressBooks}

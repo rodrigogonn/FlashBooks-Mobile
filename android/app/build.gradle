@@ -6,9 +6,10 @@ import io.github.cdimascio.dotenv.Dotenv
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
+def envFileName = System.getenv("ENVFILE") ?: ".env"
 def dotenv = Dotenv.configure()
     .directory(projectRoot.toString())
-    .filename(".env")
+    .filename(envFileName)
     .load()
 
 /**

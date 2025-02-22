@@ -17,7 +17,7 @@ export enum HeaderVariant {
 
 interface HeaderProps {
   variant?: HeaderVariant;
-  title: string;
+  title?: string;
   leftComponent?: React.ReactNode;
   rightComponent?: React.ReactNode;
   canGoBack?: boolean;
@@ -28,15 +28,13 @@ export const Header = ({
   variant = HeaderVariant.Default,
   leftComponent,
   rightComponent,
-  canGoBack = true,
+  canGoBack,
 }: HeaderProps) => {
   const { theme, readingTheme } = useTheme();
   const readingVersion = variant === HeaderVariant.Reading;
 
   return (
-    <>
-      <SafeAreaView />
-
+    <SafeAreaView>
       <View
         style={{
           flexDirection: 'row',
@@ -62,27 +60,28 @@ export const Header = ({
             variant={variant}
           />
 
-          {readingVersion ? (
-            <ReadingTypography variant={ReadingTypographyVariant.HeaderTitle}>
-              {title}
-            </ReadingTypography>
-          ) : (
-            <Typography variant={TypographyVariant.HeaderTitle}>
-              {title}
-            </Typography>
-          )}
+          {!!title &&
+            (readingVersion ? (
+              <ReadingTypography variant={ReadingTypographyVariant.HeaderTitle}>
+                {title}
+              </ReadingTypography>
+            ) : (
+              <Typography variant={TypographyVariant.HeaderTitle}>
+                {title}
+              </Typography>
+            ))}
         </View>
 
         {rightComponent}
       </View>
-    </>
+    </SafeAreaView>
   );
 };
 
 interface LeftComponentProps {
   variant: HeaderVariant;
   leftComponent?: React.ReactNode;
-  canGoBack: boolean;
+  canGoBack?: boolean;
 }
 const LeftComponent = ({
   variant,

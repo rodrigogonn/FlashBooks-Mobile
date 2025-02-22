@@ -8,7 +8,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { useTheme } from 'hooks/useTheme';
 import { useAuthStore } from 'stores/useAuthStore';
 
-export const Login = ({}: RouteParams<RouteName.Login>) => {
+export const Login = ({ route }: RouteParams<RouteName.Login>) => {
   const loginWithGoogle = useAuthStore((state) => state.loginWithGoogle);
   const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
@@ -24,7 +24,7 @@ export const Login = ({}: RouteParams<RouteName.Login>) => {
   };
 
   return (
-    <PageLayout>
+    <PageLayout header={{ title: route.name }}>
       <View
         style={{
           display: 'flex',
