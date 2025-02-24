@@ -96,8 +96,8 @@ android {
         applicationId 'com.softminer.flashbooks'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
+        versionCode 4
+        versionName "0.0.3-alpha"
         missingDimensionStrategy "store", "play"
     }
     externalNativeBuild {
