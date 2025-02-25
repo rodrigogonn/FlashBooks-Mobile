@@ -9,13 +9,15 @@ import { StatusBar } from 'expo-status-bar';
 import { useTheme } from 'hooks/useTheme';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { ReadingThemeName } from 'theme/types';
+import { BookDescription } from './components/BookDescription';
+import React from 'react';
 
 export const Reading = ({
   route: { params },
 }: RouteParams<RouteName.Reading>) => {
   const [loading, setLoading] = useState(true);
   const confettiRef = useRef<ConfettiCannon>(null);
-  const { changeReadingBook } = useReading({
+  const { changeReadingBook, shouldDisplayDescription } = useReading({
     onComplete: () => {
       setTimeout(() => {
         confettiRef.current?.start();
@@ -27,6 +29,7 @@ export const Reading = ({
   useEffect(() => {
     changeReadingBook(params.book);
     setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
@@ -42,15 +45,21 @@ export const Reading = ({
 
   return (
     <ReadingContainer>
-      <Pages />
-      <Progress />
+      {shouldDisplayDescription ? (
+        <BookDescription />
+      ) : (
+        <>
+          <Pages />
+          <Progress />
 
-      <ConfettiCannon
-        ref={confettiRef}
-        count={60}
-        origin={{ x: -50, y: 0 }}
-        autoStart={false}
-      />
+          <ConfettiCannon
+            ref={confettiRef}
+            count={60}
+            origin={{ x: -50, y: 0 }}
+            autoStart={false}
+          />
+        </>
+      )}
 
       <StatusBar
         style={readingTheme.name === ReadingThemeName.Dark ? 'light' : 'dark'}

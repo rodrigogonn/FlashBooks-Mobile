@@ -31,7 +31,7 @@ import { ErrorPage } from 'components/ErrorPage';
 const Stack = createNativeStackNavigator<StackRouteParamList>();
 const Tab = createBottomTabNavigator<TabRouteParamList>();
 
-export const Home = ({}: RouteParams<RouteName.Home>) => {
+export const Home = (_props: RouteParams<RouteName.Home>) => {
   const { theme } = useTheme();
   const { books } = useBooks();
 
@@ -85,6 +85,7 @@ export const LoggedInRoutes = () => {
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading) {

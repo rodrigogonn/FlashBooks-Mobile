@@ -12,7 +12,8 @@ import { createUserSpecificStorage } from 'utils/userStorageAdapter';
 
 interface ReadingState {
   book?: Book;
-  currentPageIndex: number;
+  currentPageIndex?: number;
+  started: boolean;
   textSize: number;
   adjustmentsOpen: boolean;
 }
@@ -26,14 +27,16 @@ interface ReadingContextType extends ReadingState {
   closeAdjustments: () => void;
   addCompleteListener: (listener: EventListener<void>) => void;
   removeCompleteListener: (listener: EventListener<void>) => void;
+  startReading: () => void;
 }
 
 type ReadingAction =
-  | { type: 'CHANGE_BOOK'; payload: { book: Book; pageIndex: number } }
+  | { type: 'CHANGE_BOOK'; payload: { book: Book } }
   | { type: 'CHANGE_PAGE'; payload: { index: number } }
   | { type: 'CHANGE_TEXT_SIZE'; payload: { value: number } }
   | { type: 'TOGGLE_ADJUSTMENTS'; payload: { open: boolean } }
-  | { type: 'LOAD_PERSISTED_DATA'; payload: Pick<ReadingState, 'textSize'> };
+  | { type: 'LOAD_PERSISTED_DATA'; payload: Pick<ReadingState, 'textSize'> }
+  | { type: 'START_READING' };
 
 export const ReadingContext = createContext<ReadingContextType | null>(null);
 
@@ -48,7 +51,8 @@ function readingReducer(
       return {
         ...state,
         book: action.payload.book,
-        currentPageIndex: action.payload.pageIndex,
+        currentPageIndex: action.payload.book.lastReadPageIndex,
+        started: false,
       };
 
     case 'CHANGE_PAGE':
@@ -75,6 +79,12 @@ function readingReducer(
         textSize: action.payload.textSize,
       };
 
+    case 'START_READING':
+      return {
+        ...state,
+        started: true,
+      };
+
     default:
       return state;
   }
@@ -82,7 +92,8 @@ function readingReducer(
 
 const initialState: ReadingState = {
   book: undefined,
-  currentPageIndex: 0,
+  currentPageIndex: undefined,
+  started: false,
   textSize: 1,
   adjustmentsOpen: false,
 };
@@ -141,17 +152,12 @@ export const ReadingProvider = ({
     persistData(state);
   }, [state, persistData]);
 
-  const changeReadingBook = useCallback(
-    (newBook: Book) => {
-      const newPage = newBook.finished ? 0 : newBook.lastReadPageIndex || 0;
-      dispatch({
-        type: 'CHANGE_BOOK',
-        payload: { book: newBook, pageIndex: newPage },
-      });
-      updateBookStatus(newBook.id, { lastReadPageIndex: newPage });
-    },
-    [updateBookStatus]
-  );
+  const changeReadingBook = useCallback((newBook: Book) => {
+    dispatch({
+      type: 'CHANGE_BOOK',
+      payload: { book: newBook },
+    });
+  }, []);
 
   const changePage = useCallback(
     (index: number) => {
@@ -162,6 +168,13 @@ export const ReadingProvider = ({
     },
     [state.book, updateBookStatus]
   );
+
+  const startReading = useCallback(() => {
+    dispatch({ type: 'START_READING' });
+    if (state.book) {
+      updateBookStatus(state.book.id, { lastReadPageIndex: 0 });
+    }
+  }, [state.book, updateBookStatus]);
 
   const changeTextSize = useCallback((value: number) => {
     dispatch({ type: 'CHANGE_TEXT_SIZE', payload: { value } });
@@ -204,6 +217,7 @@ export const ReadingProvider = ({
         closeAdjustments,
         addCompleteListener,
         removeCompleteListener,
+        startReading,
       }}>
       {children}
     </ReadingContext.Provider>

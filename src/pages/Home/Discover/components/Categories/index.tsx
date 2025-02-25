@@ -1,5 +1,4 @@
 import { Typography, TypographyVariant } from 'components/Typography';
-import { useTheme } from 'hooks/useTheme';
 import { useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Category } from 'types/category.interface';
@@ -13,8 +12,6 @@ export const Categories = ({
   categories,
   onSelectCategory,
 }: CategoriesProps) => {
-  const { theme } = useTheme();
-
   const { halfCategories, otherHalfCategories } = useMemo(() => {
     const halfCategories = categories.slice(
       0,

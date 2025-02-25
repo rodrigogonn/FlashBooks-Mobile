@@ -80,7 +80,7 @@ export const Library = ({ route }: RouteParams<RouteName.Library>) => {
               style={{
                 marginBottom: 16,
               }}>
-              Deseja remover o livro "{bookMenuContext.title}" da sua
+              Deseja remover o livro &quot;{bookMenuContext.title}&quot; da sua
               biblioteca?
             </Typography>
 

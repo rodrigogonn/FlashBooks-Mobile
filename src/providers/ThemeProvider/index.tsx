@@ -62,7 +62,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   const storage = useMemo(() => {
     return createUserSpecificStorage(user ? user.id : 'default');
-  }, [user?.id]);
+  }, [user]);
 
   const loadPersistedData = useCallback(async () => {
     try {
@@ -83,7 +83,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       console.error('Error loading persisted theme data:', error);
     }
-  }, [storage, user?.id]);
+  }, [storage, user]);
 
   const persistData = useCallback(
     async (data: ThemeState) => {
@@ -97,7 +97,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
         console.error('Error persisting theme data:', error);
       }
     },
-    [storage, user?.id]
+    [storage, user]
   );
 
   useEffect(() => {

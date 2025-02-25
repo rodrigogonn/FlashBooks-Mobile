@@ -8,22 +8,22 @@ import { RouteName, RouteParams } from 'routes/types';
 export const Subscription = ({
   route,
 }: RouteParams<RouteName.Subscription>) => {
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
 
   const handleSubscribe = (plan: string) => {
     console.log(`Assinatura escolhida: ${plan}`);
     // Implementar lógica de assinatura do plano aqui
   };
 
-  const handleGoogleSubscription = async () => {
-    try {
-      console.log('Assinar pelo Google');
-      // Implementar lógica de assinatura pelo Google aqui
-      // Alterar o subscription localmente aqui com base na resposta
-    } catch (error) {
-      console.error('Erro ao assinar com Google', error);
-    }
-  };
+  // const handleGoogleSubscription = async () => {
+  //   try {
+  //     console.log('Assinar pelo Google');
+  //     // Implementar lógica de assinatura pelo Google aqui
+  //     // Alterar o subscription localmente aqui com base na resposta
+  //   } catch (error) {
+  //     console.error('Erro ao assinar com Google', error);
+  //   }
+  // };
 
   return (
     <PageLayout header={{ title: route.name }}>

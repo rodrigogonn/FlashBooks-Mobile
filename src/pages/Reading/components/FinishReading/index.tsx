@@ -34,6 +34,7 @@ export const FinishReading = () => {
         style={{
           flex: 1,
           gap: 16,
+          paddingBottom: 16,
         }}>
         <ReadingTypography variant={ReadingTypographyVariant.Paragraph}>
           Parabéns por finalizar o resumo de {book.title}! Esperamos que você

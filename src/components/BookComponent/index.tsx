@@ -7,20 +7,28 @@ import FastImage from 'react-native-fast-image';
 
 export interface BookComponentProps {
   book: Book;
-  withProgress?: boolean;
-  small?: boolean;
   style?: ViewStyle;
   onPress?: () => void;
   onLongPress?: () => void;
+  options?: {
+    withTitle?: boolean;
+    withProgress?: boolean;
+    size?: 'small' | 'medium' | 'large';
+  };
 }
 export const BookComponent = ({
   book,
-  withProgress = false,
-  small = false,
+  options,
   style,
   onPress,
   onLongPress,
 }: BookComponentProps) => {
+  const {
+    withProgress = false,
+    size = 'medium',
+    withTitle = true,
+  } = options || {};
+
   const { theme } = useTheme();
   const progress = useMemo(() => {
     if (book.finished) return 1;
@@ -32,7 +40,7 @@ export const BookComponent = ({
       onPress={onPress}
       onLongPress={onLongPress}
       style={{
-        width: 155 * (small ? 0.6 : 1),
+        width: 155 * (size === 'small' ? 0.6 : size === 'large' ? 1.4 : 1),
         ...style,
       }}>
       <View
@@ -56,6 +64,7 @@ export const BookComponent = ({
           resizeMode={FastImage.resizeMode.cover}
         />
         <View
+          // eslint-disable-next-line react-native/no-color-literals
           style={{
             position: 'absolute',
             height: '100%',
@@ -87,9 +96,11 @@ export const BookComponent = ({
         </View>
       )}
 
-      <Typography variant={TypographyVariant.BookListTitle} numberOfLines={1}>
-        {book.title}
-      </Typography>
+      {withTitle && (
+        <Typography variant={TypographyVariant.BookListTitle} numberOfLines={1}>
+          {book.title}
+        </Typography>
+      )}
     </TouchableOpacity>
   );
 };

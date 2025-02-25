@@ -9,7 +9,7 @@ import React from 'react';
 import { Routes } from 'routes';
 
 const App = () => {
-  let [fontsLoaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     Comfortaa_300Light,
     Comfortaa_400Regular,
     Comfortaa_700Bold,

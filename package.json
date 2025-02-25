@@ -4,7 +4,7 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
-    "android": "cross-env EXPO_NO_DOTENV=1 ENVFILE=.env.production expo run:android",
+    "android": "cross-env EXPO_NO_DOTENV=1 ENVFILE=.env expo run:android",
     "expo:clean": "expo start -c",
     "android:build:staging": "cross-env EXPO_NO_DOTENV=1 ENVFILE=.env.staging android/gradlew bundleRelease -p android",
     "android:build:staging:apk": "cross-env EXPO_NO_DOTENV=1 ENVFILE=.env.staging android/gradlew assembleRelease -p android",
@@ -13,7 +13,9 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "typecheck": "tsc",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
   "dependencies": {
     "@expo-google-fonts/comfortaa": "^0.2.3",
@@ -45,7 +47,13 @@
     "@types/luxon": "^3.4.2",
     "@types/react": "~18.2.45",
     "@types/react-native-snap-carousel": "^3.8.11",
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
+    "@typescript-eslint/parser": "^8.25.0",
     "cross-env": "^7.0.3",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-native": "^5.0.0",
     "patch-package": "^8.0.0",
     "typescript": "~5.3.3"
   },

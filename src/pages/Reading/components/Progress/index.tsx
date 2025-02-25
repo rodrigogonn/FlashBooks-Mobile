@@ -9,8 +9,8 @@ export const Progress = () => {
   const percentage = useMemo(() => {
     if (!book) return 0;
     if (completed) return 1;
-    return currentPageIndex / book.chapters.length;
-  }, [book, currentPageIndex]);
+    return (currentPageIndex || 0) / book.chapters.length;
+  }, [book, completed, currentPageIndex]);
 
   return (
     <View

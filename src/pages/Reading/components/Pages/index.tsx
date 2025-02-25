@@ -9,7 +9,7 @@ const pageWidth = Dimensions.get('window').width;
 
 export const Pages = () => {
   const { changePage, book, complete, currentPageIndex } = useReading();
-  const carouselRef = useRef<Carousel<any>>(null);
+  const carouselRef = useRef<Carousel<number>>(null);
 
   if (!book) return null;
 

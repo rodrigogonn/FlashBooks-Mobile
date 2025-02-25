@@ -30,11 +30,11 @@ export const Discover = ({ route }: RouteParams<RouteName.Discover>) => {
       },
       {}
     );
-  }, [books, categories]);
+  }, [books]);
 
   const categoriesWithBooks = useMemo(() => {
     return categories.filter((category) => booksByCategory[category.id]);
-  }, [categories, booksByCategory]);
+  }, [booksByCategory]);
 
   const bookCollections: Array<{
     collection: BookCollection;

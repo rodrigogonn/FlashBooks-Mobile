@@ -7,6 +7,7 @@ export enum ReadingTypographyVariant {
   HeaderTitle,
   Title,
   Paragraph,
+  Small,
   Button,
 }
 
@@ -57,6 +58,13 @@ const useStyleFromVariant = (variant: ReadingTypographyVariant) => {
           fontFamily: readingTheme.fontFamily.regular,
           fontSize: 16 * textSize,
           color: readingTheme.colors.text,
+        };
+      case ReadingTypographyVariant.Small:
+        return {
+          fontFamily: readingTheme.fontFamily.regular,
+          fontSize: 14 * textSize,
+          color: readingTheme.colors.text,
+          opacity: 0.8,
         };
       case ReadingTypographyVariant.Button:
         return {

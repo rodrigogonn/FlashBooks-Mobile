@@ -7,7 +7,7 @@ import { TouchableOpacity } from 'react-native';
 import { RouteName, StackNavigation } from 'routes/types';
 
 export const ReadingHeader = () => {
-  const { book, openAdjustments } = useReading();
+  const { book, openAdjustments, shouldDisplayDescription } = useReading();
   const { readingTheme } = useTheme();
   const stackNavigation = useNavigation<StackNavigation>();
 
@@ -18,9 +18,11 @@ export const ReadingHeader = () => {
       leftComponent={
         <TouchableOpacity
           onPress={() =>
-            stackNavigation.navigate(RouteName.Home, {
-              screen: RouteName.Library,
-            })
+            shouldDisplayDescription
+              ? stackNavigation.goBack()
+              : stackNavigation.navigate(RouteName.Home, {
+                  screen: RouteName.Library,
+                })
           }
           style={{
             padding: 4,

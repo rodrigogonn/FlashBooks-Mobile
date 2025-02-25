@@ -97,8 +97,10 @@ export const BookList = ({
             <BookComponent
               key={book.id}
               book={book}
-              small={small}
-              withProgress={withProgress}
+              options={{
+                size: small ? 'small' : 'medium',
+                withProgress,
+              }}
               onPress={() => onSelect?.(book)}
               onLongPress={onLongPress ? () => onLongPress(book) : undefined}
             />

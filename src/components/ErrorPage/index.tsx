@@ -1,12 +1,9 @@
 import { View } from 'react-native';
-import { useTheme } from 'hooks/useTheme';
 import { PageLayout } from 'components/PageLayout';
 import { Typography, TypographyVariant } from 'components/Typography';
 import { Button } from 'components/Button';
 
 export const ErrorPage = ({ onRetry }: { onRetry?: () => void }) => {
-  const { theme } = useTheme();
-
   return (
     <PageLayout>
       <View
