@@ -62,11 +62,21 @@ export const Header = ({
 
           {!!title &&
             (readingVersion ? (
-              <ReadingTypography variant={ReadingTypographyVariant.HeaderTitle}>
+              <ReadingTypography
+                variant={ReadingTypographyVariant.HeaderTitle}
+                numberOfLines={1}
+                style={{
+                  flex: 1,
+                }}>
                 {title}
               </ReadingTypography>
             ) : (
-              <Typography variant={TypographyVariant.HeaderTitle}>
+              <Typography
+                variant={TypographyVariant.HeaderTitle}
+                numberOfLines={1}
+                style={{
+                  flex: 1,
+                }}>
                 {title}
               </Typography>
             ))}

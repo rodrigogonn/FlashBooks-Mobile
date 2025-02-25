@@ -15,8 +15,8 @@ export interface Subscription {
   productId: string;
   purchaseToken: string;
   status: SubscriptionStatus;
-  startTime: Date;
-  expiryTime: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  startTime: string;
+  expiryTime: string;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -23,6 +23,9 @@ export const buildHomeScreenOptions =
         case RouteName.Library:
           iconName = 'bookmark';
           break;
+        case RouteName.Config:
+          iconName = 'cog';
+          break;
       }
 
       return <FontAwesome5 name={iconName} size={24} color={color} />;

@@ -18,6 +18,10 @@ export const theme: Theme = {
         background: '#007bff',
         color: '#ffffff',
       },
+      ghost: {
+        background: '#ffffff',
+        color: '#333333',
+      },
       icon: '#e0e0e0',
     },
     bookList: {

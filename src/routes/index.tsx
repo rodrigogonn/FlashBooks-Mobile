@@ -27,6 +27,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ThemeName } from 'theme/types';
 import { LoadingPage } from 'components/LoadingPage';
 import { ErrorPage } from 'components/ErrorPage';
+import { Config } from 'pages/Home/Config';
 
 const Stack = createNativeStackNavigator<StackRouteParamList>();
 const Tab = createBottomTabNavigator<TabRouteParamList>();
@@ -47,6 +48,7 @@ export const Home = (_props: RouteParams<RouteName.Home>) => {
       screenOptions={buildHomeScreenOptions({ theme })}>
       <Tab.Screen name={RouteName.Discover} component={Discover} />
       <Tab.Screen name={RouteName.Library} component={Library} />
+      <Tab.Screen name={RouteName.Config} component={Config} />
     </Tab.Navigator>
   );
 };

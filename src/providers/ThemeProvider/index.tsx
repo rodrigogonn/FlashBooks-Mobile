@@ -61,14 +61,21 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuthStore();
 
   const storage = useMemo(() => {
-    return createUserSpecificStorage(user ? user.id : 'default');
+    return createUserSpecificStorage(user?.id || 'default');
   }, [user]);
+  const defaultStorage = useMemo(() => {
+    return createUserSpecificStorage('default');
+  }, []);
 
   const loadPersistedData = useCallback(async () => {
     try {
-      const persistedData = await storage.getItem(
-        user ? themeStoreKey : lastUsedThemeKey
-      );
+      let persistedData;
+      if (user) {
+        persistedData = await storage.getItem(themeStoreKey);
+      } else {
+        persistedData = await defaultStorage.getItem(lastUsedThemeKey);
+      }
+
       if (persistedData) {
         const parsedData = JSON.parse(persistedData);
         const loadedState = {
@@ -83,7 +90,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       console.error('Error loading persisted theme data:', error);
     }
-  }, [storage, user]);
+  }, [defaultStorage, storage, user]);
 
   const persistData = useCallback(
     async (data: ThemeState) => {
@@ -92,12 +99,12 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
           await storage.setItem(themeStoreKey, JSON.stringify(data));
         }
 
-        await storage.setItem(lastUsedThemeKey, JSON.stringify(data));
+        await defaultStorage.setItem(lastUsedThemeKey, JSON.stringify(data));
       } catch (error) {
         console.error('Error persisting theme data:', error);
       }
     },
-    [storage, user]
+    [storage, user, defaultStorage]
   );
 
   useEffect(() => {

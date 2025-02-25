@@ -22,6 +22,10 @@ export const theme: Theme = {
         background: '#1a73e8',
         color: '#ffffff',
       },
+      ghost: {
+        background: '#1e1e1e',
+        color: '#ffffff',
+      },
       icon: '#555555',
     },
     common: {

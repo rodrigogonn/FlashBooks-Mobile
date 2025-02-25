@@ -19,6 +19,10 @@ export interface Palette {
       background: string;
       color: string;
     };
+    ghost: {
+      background: string;
+      color: string;
+    };
     icon: string;
   };
   bookList: {

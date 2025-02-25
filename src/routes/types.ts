@@ -9,6 +9,7 @@ import { Book } from 'providers/BooksProvider/types';
 export enum RouteName {
   Discover = 'Explorar',
   Library = 'Biblioteca',
+  Config = 'Configurações',
   Home = 'Home',
   Reading = 'Reading',
   BookList = 'BookList',
@@ -19,6 +20,7 @@ export enum RouteName {
 export type TabRouteParamList = {
   [RouteName.Discover]: undefined;
   [RouteName.Library]: undefined;
+  [RouteName.Config]: undefined;
 };
 
 export type StackRouteParamList = {
