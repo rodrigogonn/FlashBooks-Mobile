@@ -15,11 +15,9 @@ import {
 import { buildHomeScreenOptions } from './styles';
 import { Subscription as SubscriptionPage } from 'pages/Subscription';
 import { useAuthStore } from 'stores/useAuthStore';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTheme } from 'hooks/useTheme';
 import { booksService } from 'services/books';
-import { subscriptionsService } from 'services/subscriptions';
-import { Subscription } from 'services/subscriptions/types';
 import { useBooks } from 'hooks/useBooks';
 import { BooksProvider } from 'providers/BooksProvider';
 import { ReadingProvider } from 'providers/ReadingProvider';
@@ -28,6 +26,8 @@ import { ThemeName } from 'theme/types';
 import { LoadingPage } from 'components/LoadingPage';
 import { ErrorPage } from 'components/ErrorPage';
 import { Config } from 'pages/Home/Config';
+import { useSubscription } from 'hooks/useSubscription';
+import { SubscriptionProvider } from 'providers/SubscriptionProvider';
 
 const Stack = createNativeStackNavigator<StackRouteParamList>();
 const Tab = createBottomTabNavigator<TabRouteParamList>();
@@ -36,7 +36,7 @@ export const Home = (_props: RouteParams<RouteName.Home>) => {
   const { theme } = useTheme();
   const { books } = useBooks();
 
-  const inProgressBooks = useMemo(() => {
+  const inProgressBooks = React.useMemo(() => {
     return books.filter((book) => book.lastReadAt);
   }, [books]);
 
@@ -55,22 +55,18 @@ export const Home = (_props: RouteParams<RouteName.Home>) => {
 
 export const LoggedInRoutes = () => {
   const { lastSync, syncData } = useBooks();
+  const {
+    subscription,
+    error: errorSubscription,
+    loading: isLoadingSubscription,
+  } = useSubscription();
+  const [isLoadingSync, setIsLoadingSync] = useState(true);
+  const [errorSync, setErrorSync] = useState(false);
 
-  const [activeSubscription, setActiveSubscription] = useState<Subscription>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
-      setIsLoading(true);
-      setError(false);
-      // @TODO criar um provider pra assinatura para que verifique a expiração para poder usar offline
-      const { subscriptions } = await subscriptionsService.getSubscriptions();
-      const activeSubscription = subscriptions[0];
-
-      setActiveSubscription(activeSubscription);
-
-      if (!activeSubscription) return;
+      setIsLoadingSync(true);
+      setErrorSync(false);
 
       const syncResponse = await booksService.getNotSyncedData({
         lastSync,
@@ -79,22 +75,25 @@ export const LoggedInRoutes = () => {
       syncData(syncResponse);
     } catch (error) {
       console.error(error);
-      setError(true);
+      setErrorSync(true);
     } finally {
-      setIsLoading(false);
+      setIsLoadingSync(false);
     }
-  };
+  }, [lastSync, syncData]);
 
   useEffect(() => {
+    if (isLoadingSubscription) return;
+    if (!subscription) return;
+
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isLoadingSubscription]);
 
-  if (isLoading) {
+  if (isLoadingSubscription || (isLoadingSync && !lastSync)) {
     return <LoadingPage />;
   }
 
-  if (error) {
+  if (errorSubscription || (errorSync && !lastSync)) {
     return <ErrorPage onRetry={loadData} />;
   }
 
@@ -104,7 +103,7 @@ export const LoggedInRoutes = () => {
         headerShown: false,
         animation: 'slide_from_bottom',
       }}>
-      {activeSubscription ? (
+      {subscription ? (
         <>
           <Stack.Screen name={RouteName.Home} component={Home} />
           <Stack.Screen name={RouteName.Reading} component={Reading} />
@@ -128,11 +127,13 @@ export const Routes = () => {
     <>
       <NavigationContainer>
         {user ? (
-          <BooksProvider userId={user.id}>
-            <ReadingProvider userId={user.id}>
-              <LoggedInRoutes />
-            </ReadingProvider>
-          </BooksProvider>
+          <SubscriptionProvider>
+            <BooksProvider userId={user.id}>
+              <ReadingProvider userId={user.id}>
+                <LoggedInRoutes />
+              </ReadingProvider>
+            </BooksProvider>
+          </SubscriptionProvider>
         ) : (
           <Stack.Navigator
             screenOptions={{

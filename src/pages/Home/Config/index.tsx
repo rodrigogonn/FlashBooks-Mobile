@@ -1,49 +1,26 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
 import { PageLayout } from 'components/PageLayout';
 import { Typography, TypographyVariant } from 'components/Typography';
 import { useTheme } from 'hooks/useTheme';
 import { View, Image } from 'react-native';
-import { RouteName, RouteParams, StackNavigation } from 'routes/types';
+import { RouteName, RouteParams } from 'routes/types';
 import { useAuthStore } from 'stores/useAuthStore';
 import { ThemeName } from 'theme/types';
 import { MaterialIcons } from '@expo/vector-icons';
 import { DateTime } from 'luxon';
-import { subscriptionsService } from 'services/subscriptions';
-import { useEffect, useState } from 'react';
-import { Subscription } from 'services/subscriptions/types';
 import { Button } from 'components/Button';
+import { useSubscription } from 'hooks/useSubscription';
 
 export const Config = ({ route }: RouteParams<RouteName.Config>) => {
-  const stackNavigation = useNavigation<StackNavigation>();
+  const { subscription } = useSubscription();
   const { theme, changeTheme } = useTheme();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
-
-  useEffect(() => {
-    const loadSubscription = async () => {
-      try {
-        const { subscriptions } = await subscriptionsService.getSubscriptions();
-        if (subscriptions.length > 0) {
-          setSubscription(subscriptions[0] || null);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar assinatura:', error);
-      }
-    };
-
-    loadSubscription();
-  }, []);
 
   const handleThemeToggle = () => {
     changeTheme(
       theme.name === ThemeName.Dark ? ThemeName.Light : ThemeName.Dark
     );
-  };
-
-  const formatExpiryDate = (date: string) => {
-    return DateTime.fromISO(date).toFormat('dd/MM/yyyy');
   };
 
   return (
