@@ -28,6 +28,7 @@ export const Config = ({ route }: RouteParams<RouteName.Config>) => {
       <View style={{ padding: 16, gap: 24 }}>
         {/* Perfil do Usuário */}
         <View style={{ alignItems: 'center', gap: 8 }}>
+          {/* @TODO imagem não aparecendo em alguns dispositivos? */}
           <Image
             source={{ uri: user?.photo }}
             style={{
@@ -60,6 +61,7 @@ export const Config = ({ route }: RouteParams<RouteName.Config>) => {
               borderRadius: 8,
               gap: 8,
             }}>
+            {/* @TODO Colocar deeplink pra assinatura aqui */}
             <Typography variant={TypographyVariant.Subtitle}>
               Informações da Assinatura
             </Typography>

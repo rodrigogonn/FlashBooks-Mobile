@@ -3,8 +3,6 @@ export enum SubscriptionStatus {
   CANCELED = 'CANCELED',
   EXPIRED = 'EXPIRED',
   ON_HOLD = 'ON_HOLD',
-  GRACE_PERIOD = 'GRACE_PERIOD',
-  PAUSED = 'PAUSED',
   REVOKED = 'REVOKED',
 }
 

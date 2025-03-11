@@ -1,29 +1,39 @@
 import { PageLayout } from 'components/PageLayout';
 import { Typography, TypographyVariant } from 'components/Typography';
 import { useTheme } from 'hooks/useTheme';
-import React from 'react';
-import { View } from 'react-native';
+import React, { useEffect } from 'react';
+import { Alert, View } from 'react-native';
 import { RouteName, RouteParams } from 'routes/types';
+import { TouchableOpacity } from 'react-native';
+import { Button } from 'components/Button';
+import {
+  requestSubscription,
+  useIAP,
+  getSubscriptions as libGetSubscriptions,
+} from 'react-native-iap';
+
+const subscriptionSkus = [
+  'comflashbooks-assinatura-premium-mensal',
+  'comflashbooks-assinatura-premium-trimestral',
+  'comflashbooks-assinatura-premium-anual',
+];
 
 export const Subscription = ({
   route,
 }: RouteParams<RouteName.Subscription>) => {
   // const { theme } = useTheme();
+  const { connected, subscriptions, getSubscriptions } = useIAP();
 
-  const handleSubscribe = (plan: string) => {
-    console.log(`Assinatura escolhida: ${plan}`);
-    // Implementar lógica de assinatura do plano aqui
-  };
+  useEffect(() => {
+    if (!connected) return;
 
-  // const handleGoogleSubscription = async () => {
-  //   try {
-  //     console.log('Assinar pelo Google');
-  //     // Implementar lógica de assinatura pelo Google aqui
-  //     // Alterar o subscription localmente aqui com base na resposta
-  //   } catch (error) {
-  //     console.error('Erro ao assinar com Google', error);
-  //   }
-  // };
+    getSubscriptions({ skus: subscriptionSkus }).then((subscriptions) => {
+      Alert.alert('subscriptions', JSON.stringify(subscriptions));
+    });
+    libGetSubscriptions({ skus: subscriptionSkus }).then((subscriptions) => {
+      Alert.alert('lib subscriptions', JSON.stringify(subscriptions));
+    });
+  }, [connected, getSubscriptions]);
 
   return (
     <PageLayout header={{ title: route.name }}>
@@ -42,13 +52,43 @@ export const Subscription = ({
           benefícios
         </Typography>
 
+        <Typography variant={TypographyVariant.Body}>
+          connected: {String(connected)}
+        </Typography>
+
         <View
           style={{
             marginTop: 'auto',
             display: 'flex',
             gap: 16,
           }}>
-          <PlanCard
+          {subscriptions.map((subscription) => (
+            <View key={subscription.productId}>
+              <Typography variant={TypographyVariant.Body}>
+                productId: {subscription.productId}
+              </Typography>
+              <Typography variant={TypographyVariant.Body}>
+                title: {subscription.title}
+              </Typography>
+              <Typography variant={TypographyVariant.Body}>
+                platform: {subscription.platform}
+              </Typography>
+              <Typography variant={TypographyVariant.Body}>
+                description: {subscription.description}
+              </Typography>
+
+              <Button
+                onPress={() =>
+                  requestSubscription({ sku: subscription.productId })
+                }
+                style={{ marginTop: 'auto' }}>
+                <Typography variant={TypographyVariant.Button}>
+                  Assinar
+                </Typography>
+              </Button>
+            </View>
+          ))}
+          {/* <PlanCard
             title="Plano Mensal"
             months={1}
             discountedPrice={14.9}
@@ -73,7 +113,7 @@ export const Subscription = ({
             monthlyPrice={14.9}
             onPress={() => handleSubscribe('anual')}
             isSelected={true}
-          />
+          /> */}
         </View>
 
         <Button
@@ -86,9 +126,6 @@ export const Subscription = ({
     </PageLayout>
   );
 };
-
-import { TouchableOpacity } from 'react-native';
-import { Button } from 'components/Button';
 
 const PlanCard = ({
   title,

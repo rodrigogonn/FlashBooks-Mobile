@@ -7,6 +7,8 @@ import {
 import { ThemeProvider } from 'providers/ThemeProvider';
 import React from 'react';
 import { Routes } from 'routes';
+import { withIAPContext } from 'react-native-iap';
+import { IAPListenerProvider } from 'providers/IAPListenerProvider';
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -20,10 +22,12 @@ const App = () => {
   }
 
   return (
-    <ThemeProvider>
-      <Routes />
-    </ThemeProvider>
+    <IAPListenerProvider>
+      <ThemeProvider>
+        <Routes />
+      </ThemeProvider>
+    </IAPListenerProvider>
   );
 };
 
-export default App;
+export default withIAPContext(App);
