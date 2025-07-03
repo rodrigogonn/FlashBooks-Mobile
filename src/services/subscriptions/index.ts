@@ -9,4 +9,16 @@ export const subscriptionsService = {
 
     return response.data;
   },
+
+  verifyPurchase: async (params: {
+    purchaseToken: string;
+    packageName: string;
+    productId: string;
+  }) => {
+    const response = await authenticatedApi.post<{
+      subscription: Subscription;
+    }>('/api/subscriptions/verifyPurchase', params);
+
+    return response.data;
+  },
 };

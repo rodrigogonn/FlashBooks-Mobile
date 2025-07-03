@@ -1,39 +1,169 @@
 import { PageLayout } from 'components/PageLayout';
 import { Typography, TypographyVariant } from 'components/Typography';
 import { useTheme } from 'hooks/useTheme';
-import React, { useEffect } from 'react';
-import { Alert, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import { RouteName, RouteParams } from 'routes/types';
 import { TouchableOpacity } from 'react-native';
 import { Button } from 'components/Button';
 import {
-  requestSubscription,
+  SubscriptionOfferAndroid,
+  SubscriptionPlatform,
   useIAP,
-  getSubscriptions as libGetSubscriptions,
 } from 'react-native-iap';
 
-const subscriptionSkus = [
-  'comflashbooks-assinatura-premium-mensal',
-  'comflashbooks-assinatura-premium-trimestral',
-  'comflashbooks-assinatura-premium-anual',
-];
+const premiumSubscriptionSku = 'com.flashbooks.assinatura.premium';
+
+enum PlanId {
+  Monthly = 'comflashbooks-assinatura-premium-mensal',
+  Trimestral = 'comflashbooks-assinatura-premium-trimestral',
+  Annual = 'comflashbooks-assinatura-premium-anual',
+}
+
+interface SubscriptionDetails {
+  id: PlanId;
+  title: string;
+  months: number;
+  discountedPrice: number;
+  monthlyPrice: number;
+  subscriptionOffer: SubscriptionOfferAndroid;
+}
 
 export const Subscription = ({
   route,
 }: RouteParams<RouteName.Subscription>) => {
   // const { theme } = useTheme();
-  const { connected, subscriptions, getSubscriptions } = useIAP();
+  const {
+    connected,
+    subscriptions,
+    getSubscriptions,
+    currentPurchase,
+    currentPurchaseError,
+    requestSubscription,
+  } = useIAP();
+
+  const [selectedPlanId, setSelectedPlanId] = useState(PlanId.Trimestral);
+
+  const availableSubscriptions: SubscriptionDetails[] = useMemo(() => {
+    if (!subscriptions) return [];
+
+    const premiumSubscription = subscriptions.find(
+      (subscription) => subscription.productId === premiumSubscriptionSku
+    );
+
+    if (!premiumSubscription) return [];
+
+    if (premiumSubscription.platform !== SubscriptionPlatform.android) {
+      return [];
+    }
+
+    const monthlyPlan = premiumSubscription.subscriptionOfferDetails.find(
+      (offer) => offer.basePlanId === PlanId.Monthly
+    );
+
+    const trimestralPlan = premiumSubscription.subscriptionOfferDetails.find(
+      (offer) => offer.basePlanId === PlanId.Trimestral
+    );
+
+    const annualPlan = premiumSubscription.subscriptionOfferDetails.find(
+      (offer) => offer.basePlanId === PlanId.Annual
+    );
+
+    if (
+      !monthlyPlan ||
+      !monthlyPlan.pricingPhases.pricingPhaseList[0] ||
+      !trimestralPlan ||
+      !trimestralPlan.pricingPhases.pricingPhaseList[0] ||
+      !annualPlan ||
+      !annualPlan.pricingPhases.pricingPhaseList[0]
+    ) {
+      return [];
+    }
+
+    const monthlyPlanPrice =
+      Number(monthlyPlan.pricingPhases.pricingPhaseList[0].priceAmountMicros) /
+      1000000;
+
+    return [
+      {
+        id: monthlyPlan.basePlanId as PlanId,
+        title: 'Plano Mensal',
+        months: 1,
+        discountedPrice: monthlyPlanPrice,
+        monthlyPrice: monthlyPlanPrice,
+        subscriptionOffer: monthlyPlan,
+      },
+      {
+        id: trimestralPlan.basePlanId as PlanId,
+        title: 'Plano Trimestral',
+        months: 3,
+        discountedPrice:
+          Number(
+            trimestralPlan.pricingPhases.pricingPhaseList[0].priceAmountMicros
+          ) / 1000000,
+        monthlyPrice: monthlyPlanPrice,
+        subscriptionOffer: trimestralPlan,
+      },
+      {
+        id: annualPlan.basePlanId as PlanId,
+        title: 'Plano Anual',
+        months: 12,
+        discountedPrice:
+          Number(
+            annualPlan.pricingPhases.pricingPhaseList[0].priceAmountMicros
+          ) / 1000000,
+        monthlyPrice: monthlyPlanPrice,
+        subscriptionOffer: annualPlan,
+      },
+    ];
+  }, [subscriptions]);
 
   useEffect(() => {
     if (!connected) return;
 
-    getSubscriptions({ skus: subscriptionSkus }).then((subscriptions) => {
-      Alert.alert('subscriptions', JSON.stringify(subscriptions));
-    });
-    libGetSubscriptions({ skus: subscriptionSkus }).then((subscriptions) => {
-      Alert.alert('lib subscriptions', JSON.stringify(subscriptions));
+    getSubscriptions({
+      skus: [premiumSubscriptionSku],
     });
   }, [connected, getSubscriptions]);
+
+  useEffect(() => {
+    if (!currentPurchaseError) return;
+    console.log(
+      'currentPurchaseError [Subscription]',
+      JSON.stringify(currentPurchaseError, null, 2)
+    );
+    // ... listen to currentPurchaseError, to check if any error happened
+  }, [currentPurchaseError]);
+
+  useEffect(() => {
+    if (!currentPurchase) return;
+    console.log(
+      'currentPurchase [Subscription]',
+      JSON.stringify(currentPurchase, null, 2)
+    );
+    // ... listen to currentPurchase, to check if the purchase went through
+  }, [currentPurchase]);
+
+  const handleRequestSubscription = async () => {
+    if (!selectedPlanId) return;
+
+    const selectedSubscriptionDetails = availableSubscriptions.find(
+      (subscription) => subscription.id === selectedPlanId
+    );
+    if (!selectedSubscriptionDetails) return;
+
+    const { subscriptionOffer } = selectedSubscriptionDetails;
+
+    await requestSubscription({
+      subscriptionOffers: [
+        {
+          sku: premiumSubscriptionSku,
+          offerToken: subscriptionOffer.offerToken,
+        },
+      ],
+    });
+    console.log('Subscription requested successfully');
+  };
 
   return (
     <PageLayout header={{ title: route.name }}>
@@ -52,9 +182,13 @@ export const Subscription = ({
           benefícios
         </Typography>
 
-        <Typography variant={TypographyVariant.Body}>
-          connected: {String(connected)}
-        </Typography>
+        {currentPurchaseError && (
+          <View>
+            <Typography variant={TypographyVariant.Body}>
+              {currentPurchaseError.message}
+            </Typography>
+          </View>
+        )}
 
         <View
           style={{
@@ -63,65 +197,28 @@ export const Subscription = ({
             gap: 16,
           }}>
           {subscriptions.map((subscription) => (
-            <View key={subscription.productId}>
-              <Typography variant={TypographyVariant.Body}>
-                productId: {subscription.productId}
-              </Typography>
-              <Typography variant={TypographyVariant.Body}>
-                title: {subscription.title}
-              </Typography>
-              <Typography variant={TypographyVariant.Body}>
-                platform: {subscription.platform}
-              </Typography>
-              <Typography variant={TypographyVariant.Body}>
-                description: {subscription.description}
-              </Typography>
-
-              <Button
-                onPress={() =>
-                  requestSubscription({ sku: subscription.productId })
-                }
-                style={{ marginTop: 'auto' }}>
-                <Typography variant={TypographyVariant.Button}>
-                  Assinar
-                </Typography>
-              </Button>
-            </View>
+            <View key={subscription.productId}></View>
           ))}
-          {/* <PlanCard
-            title="Plano Mensal"
-            months={1}
-            discountedPrice={14.9}
-            monthlyPrice={14.9}
-            onPress={() => handleSubscribe('mensal')}
-            isSelected={false}
-          />
 
-          <PlanCard
-            title="Plano Trimestral"
-            months={3}
-            discountedPrice={33.53}
-            monthlyPrice={14.9}
-            onPress={() => handleSubscribe('trimestral')}
-            isSelected={false}
-          />
+          {availableSubscriptions.map((subscription) => (
+            <PlanCard
+              key={subscription.id}
+              title={subscription.title}
+              months={subscription.months}
+              discountedPrice={subscription.discountedPrice}
+              monthlyPrice={subscription.monthlyPrice}
+              onPress={() => setSelectedPlanId(subscription.id)}
+              isSelected={selectedPlanId === subscription.id}
+            />
+          ))}
 
-          <PlanCard
-            title="Plano Anual"
-            months={12}
-            discountedPrice={89.4}
-            monthlyPrice={14.9}
-            onPress={() => handleSubscribe('anual')}
-            isSelected={true}
-          /> */}
+          <Button
+            disabled={!availableSubscriptions.length}
+            onPress={handleRequestSubscription}
+            style={{ marginTop: 'auto' }}>
+            <Typography variant={TypographyVariant.Button}>Assinar</Typography>
+          </Button>
         </View>
-
-        <Button
-          // onPress={handleLogin}
-          // disabled={loading}
-          style={{ marginTop: 'auto' }}>
-          <Typography variant={TypographyVariant.Button}>Assinar</Typography>
-        </Button>
       </View>
     </PageLayout>
   );

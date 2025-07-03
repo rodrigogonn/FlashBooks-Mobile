@@ -68,22 +68,23 @@ export const LoggedInRoutes = () => {
       setIsLoadingSync(true);
       setErrorSync(false);
 
-      const syncResponse = await booksService.getNotSyncedData({
-        lastSync,
-      });
+      if (subscription) {
+        const syncResponse = await booksService.getNotSyncedData({
+          lastSync,
+        });
 
-      syncData(syncResponse);
+        syncData(syncResponse);
+      }
     } catch (error) {
       console.error(error);
       setErrorSync(true);
     } finally {
       setIsLoadingSync(false);
     }
-  }, [lastSync, syncData]);
+  }, [lastSync, subscription, syncData]);
 
   useEffect(() => {
     if (isLoadingSubscription) return;
-    if (!subscription) return;
 
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -4,9 +4,14 @@ import {
   ReadingTypography,
   ReadingTypographyVariant,
 } from 'components/ReadingTypography';
-import { Chapter, ContentType } from 'providers/BooksProvider/types';
+import {
+  Chapter,
+  ContentType,
+  KeyPointType,
+  KeyPoint,
+} from 'providers/BooksProvider/types';
 import { useTheme } from 'hooks/useTheme';
-import { View } from 'react-native';
+import { TextStyle, View } from 'react-native';
 import { PageContainer } from '../PageContainer';
 
 interface PageProps {
@@ -41,7 +46,7 @@ export const PageComponent = ({
         }}>
         {chapter.content.map((content, index) => {
           switch (content.type) {
-            case ContentType.PARAGRAPH:
+            case ContentType.PARAGRAPH: {
               return (
                 <ReadingTypography
                   key={index}
@@ -49,6 +54,10 @@ export const PageComponent = ({
                   {content.text}
                 </ReadingTypography>
               );
+            }
+            case ContentType.KEY_POINT: {
+              return <KeyPointComponent key={index} content={content} />;
+            }
           }
         })}
       </View>
@@ -97,5 +106,71 @@ export const PageComponent = ({
         </IconButton>
       </View>
     </PageContainer>
+  );
+};
+
+interface KeyPointComponentProps {
+  content: KeyPoint;
+}
+
+export const KeyPointComponent = ({ content }: KeyPointComponentProps) => {
+  const { readingTheme } = useTheme();
+
+  const getTypographyStyle = (keyPointType: KeyPointType): TextStyle => {
+    const baseStyle = {
+      letterSpacing: 0.3,
+    };
+
+    switch (keyPointType) {
+      case KeyPointType.QUOTE:
+        return {
+          fontStyle: 'italic',
+          opacity: 0.8,
+        };
+      case KeyPointType.INSIGHT:
+        return {
+          ...baseStyle,
+          color: readingTheme.colors.keyPoint.accent,
+          fontFamily: readingTheme.fontFamily.bold,
+        };
+      case KeyPointType.MOMENT:
+        return {
+          ...baseStyle,
+          fontFamily: readingTheme.fontFamily.bold,
+          opacity: 0.8,
+        };
+      default:
+        return {};
+    }
+  };
+
+  if (!Object.values(KeyPointType).includes(content.keyPointType)) return null;
+
+  return (
+    <View
+      style={{
+        paddingHorizontal: 16,
+        marginVertical: 12,
+      }}>
+      <ReadingTypography
+        variant={ReadingTypographyVariant.Paragraph}
+        style={getTypographyStyle(content.keyPointType)}>
+        {content.keyPointType === KeyPointType.QUOTE
+          ? `"${content.text}"`
+          : content.text}
+      </ReadingTypography>
+
+      {content.keyPointType === KeyPointType.QUOTE && !!content.reference && (
+        <ReadingTypography
+          variant={ReadingTypographyVariant.Small}
+          style={{
+            marginTop: 8,
+            opacity: 0.8,
+            textAlign: 'right',
+          }}>
+          — {content.reference}
+        </ReadingTypography>
+      )}
+    </View>
   );
 };

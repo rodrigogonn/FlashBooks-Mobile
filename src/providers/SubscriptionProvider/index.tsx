@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { createUserSpecificStorage } from 'utils/userStorageAdapter';
 import { useAuthStore } from 'stores/useAuthStore';
-import { Subscription, SubscriptionStatus } from 'services/subscriptions/types';
+import { Subscription } from 'services/subscriptions/types';
 import { subscriptionsService } from 'services/subscriptions';
 import { DateTime } from 'luxon';
 
@@ -69,7 +69,7 @@ function subscriptionReducer(
 
 const initialState: SubscriptionState = {
   subscription: null,
-  loading: false,
+  loading: true,
   error: null,
 };
 
@@ -135,16 +135,13 @@ export const SubscriptionProvider = ({
       const expiryTime = DateTime.fromISO(subscription.expiryTime);
       const now = DateTime.now();
 
-      return (
-        now > expiryTime || subscription.status !== SubscriptionStatus.ACTIVE
-      );
+      return now > expiryTime;
     },
     []
   );
 
   const fetchSubscription = useCallback(async () => {
     try {
-      dispatch({ type: 'SET_LOADING', payload: { loading: true } });
       dispatch({ type: 'SET_ERROR', payload: { error: null } });
 
       const { subscriptions } = await subscriptionsService.getSubscriptions();

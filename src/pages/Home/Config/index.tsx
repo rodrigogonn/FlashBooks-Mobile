@@ -10,6 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { DateTime } from 'luxon';
 import { Button } from 'components/Button';
 import { useSubscription } from 'hooks/useSubscription';
+import { getInitials } from './utils/getInitials';
 
 export const Config = ({ route }: RouteParams<RouteName.Config>) => {
   const { subscription } = useSubscription();
@@ -27,30 +28,52 @@ export const Config = ({ route }: RouteParams<RouteName.Config>) => {
     <PageLayout header={{ title: route.name }}>
       <View style={{ padding: 16, gap: 24 }}>
         {/* Perfil do Usuário */}
-        <View style={{ alignItems: 'center', gap: 8 }}>
-          {/* @TODO imagem não aparecendo em alguns dispositivos? */}
-          <Image
-            source={{ uri: user?.photo }}
-            style={{
-              width: 120,
-              height: 120,
-              borderRadius: 60,
-              backgroundColor: theme.colors.card.background,
-            }}
-          />
-          <Typography
-            variant={TypographyVariant.Title}
-            style={{
-              textAlign: 'center',
-            }}>
-            {user?.name}
-          </Typography>
-          <Typography
-            variant={TypographyVariant.Body}
-            style={{ color: theme.colors.page.text, textAlign: 'center' }}>
-            {user?.email}
-          </Typography>
-        </View>
+        {user && (
+          <View style={{ alignItems: 'center', gap: 8 }}>
+            {user.photo ? (
+              <Image
+                source={{ uri: user.photo }}
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: 60,
+                  backgroundColor: theme.colors.card.background,
+                }}
+              />
+            ) : (
+              <View
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: 60,
+                  backgroundColor: theme.colors.card.background,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Typography
+                  variant={TypographyVariant.Title}
+                  style={{
+                    fontSize: 48,
+                    color: theme.colors.page.text,
+                  }}>
+                  {getInitials(user.name)}
+                </Typography>
+              </View>
+            )}
+            <Typography
+              variant={TypographyVariant.Title}
+              style={{
+                textAlign: 'center',
+              }}>
+              {user.name}
+            </Typography>
+            <Typography
+              variant={TypographyVariant.Body}
+              style={{ color: theme.colors.page.text, textAlign: 'center' }}>
+              {user.email}
+            </Typography>
+          </View>
+        )}
 
         {/* Informações da Assinatura */}
         {!!subscription && (

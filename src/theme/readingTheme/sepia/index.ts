@@ -20,5 +20,8 @@ export const readingTheme: ReadingTheme = {
       background: '#d1b497',
       fill: '#8d6e63',
     },
+    keyPoint: {
+      accent: '#8d6e63',
+    },
   },
 };

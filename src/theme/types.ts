@@ -68,6 +68,9 @@ export interface ReadingPalette {
     background: string;
     fill: string;
   };
+  keyPoint: {
+    accent: string;
+  };
 }
 
 export interface Theme {
