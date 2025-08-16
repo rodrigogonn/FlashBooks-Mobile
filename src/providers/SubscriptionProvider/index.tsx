@@ -1,9 +1,9 @@
 import React, {
   createContext,
-  useReducer,
   useCallback,
   useMemo,
   useEffect,
+  useState,
 } from 'react';
 import { createUserSpecificStorage } from 'utils/userStorageAdapter';
 import { useAuthStore } from 'stores/useAuthStore';
@@ -25,47 +25,11 @@ export interface SubscriptionContextType {
   subscription: Subscription | null;
   loading: boolean;
   error: string | null;
+  setSubscription: (subscription: Subscription | null) => void;
 }
-
-type SubscriptionAction =
-  | { type: 'SET_SUBSCRIPTION'; payload: { subscription: Subscription | null } }
-  | { type: 'LOAD_PERSISTED_DATA'; payload: SubscriptionState }
-  | { type: 'SET_LOADING'; payload: { loading: boolean } }
-  | { type: 'SET_ERROR'; payload: { error: string | null } };
 
 export const SubscriptionContext =
   createContext<SubscriptionContextType | null>(null);
-
-function subscriptionReducer(
-  state: SubscriptionState,
-  action: SubscriptionAction
-): SubscriptionState {
-  switch (action.type) {
-    case 'SET_SUBSCRIPTION':
-      return {
-        ...state,
-        subscription: action.payload.subscription,
-      };
-
-    case 'LOAD_PERSISTED_DATA':
-      return action.payload;
-
-    case 'SET_LOADING':
-      return {
-        ...state,
-        loading: action.payload.loading,
-      };
-
-    case 'SET_ERROR':
-      return {
-        ...state,
-        error: action.payload.error,
-      };
-
-    default:
-      return state;
-  }
-}
 
 const initialState: SubscriptionState = {
   subscription: null,
@@ -80,34 +44,24 @@ export const SubscriptionProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [state, dispatch] = useReducer(subscriptionReducer, initialState);
+  const [state, setState] = useState(initialState);
   const { user } = useAuthStore();
 
   const storage = useMemo(() => {
     return createUserSpecificStorage(user?.id || 'default');
   }, [user]);
 
-  const loadPersistedData = useCallback(async () => {
-    try {
-      if (!user) return;
+  const getPersistedData = useCallback(async () => {
+    if (!user) return null;
 
-      const persistedData = await storage.getItem(subscriptionStoreKey);
+    const persistedData = await storage.getItem(subscriptionStoreKey);
 
-      if (persistedData) {
-        const parsedData = JSON.parse(
-          persistedData
-        ) as SubscriptionStorageState;
-        dispatch({
-          type: 'LOAD_PERSISTED_DATA',
-          payload: {
-            ...initialState,
-            subscription: parsedData.subscription,
-          },
-        });
-      }
-    } catch (error) {
-      console.error('Error loading persisted subscription data:', error);
+    if (persistedData) {
+      const parsedData = JSON.parse(persistedData) as SubscriptionStorageState;
+      return parsedData;
     }
+
+    return null;
   }, [storage, user]);
 
   const persistData = useCallback(
@@ -132,7 +86,9 @@ export const SubscriptionProvider = ({
     (subscription: Subscription | null) => {
       if (!subscription) return true;
 
-      const expiryTime = DateTime.fromISO(subscription.expiryTime);
+      const expiryTime = DateTime.fromISO(subscription.expiryTime).plus({
+        minutes: 5,
+      });
       const now = DateTime.now();
 
       return now > expiryTime;
@@ -141,55 +97,47 @@ export const SubscriptionProvider = ({
   );
 
   const fetchSubscription = useCallback(async () => {
+    const updatedState: Partial<SubscriptionState> = {};
+
     try {
-      dispatch({ type: 'SET_ERROR', payload: { error: null } });
+      setState((prev) => ({ ...prev, error: null }));
 
       const { subscriptions } = await subscriptionsService.getSubscriptions();
       const activeSubscription = subscriptions[0] || null;
 
       if (isSubscriptionExpired(activeSubscription)) {
-        dispatch({
-          type: 'SET_SUBSCRIPTION',
-          payload: { subscription: null },
-        });
+        updatedState.subscription = null;
       } else {
-        dispatch({
-          type: 'SET_SUBSCRIPTION',
-          payload: { subscription: activeSubscription },
-        });
+        updatedState.subscription = activeSubscription;
       }
     } catch (error) {
+      const persistedData = await getPersistedData().catch(() => null);
+      if (persistedData) {
+        updatedState.subscription = persistedData.subscription;
+      }
       console.error('Error fetching subscription:', error);
-      dispatch({
-        type: 'SET_ERROR',
-        payload: { error: 'Erro ao carregar assinatura' },
-      });
+      updatedState.error = 'Erro ao carregar assinatura';
     } finally {
-      dispatch({ type: 'SET_LOADING', payload: { loading: false } });
+      setState((prev) => ({ ...prev, ...updatedState, loading: false }));
     }
-  }, [isSubscriptionExpired]);
-
-  const contextValue = useMemo(
-    () => ({
-      subscription: state.subscription,
-      loading: state.loading,
-      error: state.error,
-    }),
-    [state.subscription, state.loading, state.error]
-  );
+  }, [isSubscriptionExpired, getPersistedData]);
 
   useEffect(() => {
-    loadPersistedData();
-  }, [loadPersistedData]);
+    if (!user) return;
 
-  useEffect(() => {
-    if (user) {
+    fetchSubscription();
+
+    const interval = setInterval(() => {
       fetchSubscription();
-    }
+    }, 1000 * 60 * 60 * 24); // Refetch a cada 24 horas
+
+    return () => clearInterval(interval);
   }, [user, fetchSubscription]);
 
   useEffect(() => {
-    persistData(state);
+    if (state.subscription) {
+      persistData(state);
+    }
   }, [state, persistData]);
 
   useEffect(() => {
@@ -197,25 +145,29 @@ export const SubscriptionProvider = ({
 
     const expiryTime = DateTime.fromISO(state.subscription.expiryTime);
     const now = DateTime.now();
-    const msUntilExpiry = expiryTime.toMillis() - now.toMillis();
-
-    if (msUntilExpiry <= 0) {
-      dispatch({
-        type: 'SET_SUBSCRIPTION',
-        payload: { subscription: null },
-      });
-      return;
-    }
+    const msUntilExpiry =
+      expiryTime.plus({ minutes: 5 }).toMillis() - now.toMillis();
 
     const timeout = setTimeout(() => {
-      dispatch({
-        type: 'SET_SUBSCRIPTION',
-        payload: { subscription: null },
-      });
+      setState((prev) => ({ ...prev, subscription: null }));
     }, msUntilExpiry);
 
     return () => clearTimeout(timeout);
   }, [state.subscription]);
+
+  const setSubscription = useCallback((subscription: Subscription | null) => {
+    setState((prev) => ({ ...prev, subscription }));
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      subscription: state.subscription,
+      loading: state.loading,
+      error: state.error,
+      setSubscription,
+    }),
+    [state.subscription, state.loading, state.error, setSubscription]
+  );
 
   return (
     <SubscriptionContext.Provider value={contextValue}>

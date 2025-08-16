@@ -8,7 +8,11 @@ import { ThemeProvider } from 'providers/ThemeProvider';
 import React from 'react';
 import { Routes } from 'routes';
 import { withIAPContext } from 'react-native-iap';
-import { IAPListenerProvider } from 'providers/IAPListenerProvider';
+import { ToastProvider } from 'providers/ToastProvider';
+import { Settings } from 'luxon';
+
+Settings.defaultLocale = 'pt-BR';
+Settings.defaultZone = 'America/Sao_Paulo';
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -22,11 +26,11 @@ const App = () => {
   }
 
   return (
-    <IAPListenerProvider>
-      <ThemeProvider>
+    <ThemeProvider>
+      <ToastProvider>
         <Routes />
-      </ThemeProvider>
-    </IAPListenerProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 };
 

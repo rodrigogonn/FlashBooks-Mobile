@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { PageLayout } from 'components/PageLayout';
 import { Typography, TypographyVariant } from 'components/Typography';
 import { useTheme } from 'hooks/useTheme';
@@ -11,6 +11,7 @@ import { DateTime } from 'luxon';
 import { Button } from 'components/Button';
 import { useSubscription } from 'hooks/useSubscription';
 import { getInitials } from './utils/getInitials';
+import { SubscriptionStatus } from 'services/subscriptions/types';
 
 export const Config = ({ route }: RouteParams<RouteName.Config>) => {
   const { subscription } = useSubscription();
@@ -23,6 +24,23 @@ export const Config = ({ route }: RouteParams<RouteName.Config>) => {
       theme.name === ThemeName.Dark ? ThemeName.Light : ThemeName.Dark
     );
   };
+
+  const subscriptionStatusLabel = useMemo(() => {
+    switch (subscription?.status) {
+      case SubscriptionStatus.ACTIVE:
+        return 'Ativa';
+      case SubscriptionStatus.CANCELED:
+        return 'Cancelada';
+      case SubscriptionStatus.EXPIRED:
+        return 'Expirada';
+      case SubscriptionStatus.ON_HOLD:
+        return 'Suspensa';
+      case SubscriptionStatus.REVOKED:
+        return 'Revogada';
+      default:
+        return 'Não assinada';
+    }
+  }, [subscription]);
 
   return (
     <PageLayout header={{ title: route.name }}>
@@ -84,17 +102,38 @@ export const Config = ({ route }: RouteParams<RouteName.Config>) => {
               borderRadius: 8,
               gap: 8,
             }}>
-            {/* @TODO Colocar deeplink pra assinatura aqui */}
+            {/* deeplink pra assinatura */}
+            {/* <Button
+              variant="ghost"
+              onPress={() =>
+                deepLinkToSubscriptions({
+                  sku: premiumSubscriptionSku,
+                })
+              }
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                gap: 8,
+              }}>
+              <MaterialIcons
+                name="subscriptions"
+                size={24}
+                color={theme.colors.button.ghost.color}
+              />
+            </Button> */}
+
             <Typography variant={TypographyVariant.Subtitle}>
               Informações da Assinatura
             </Typography>
 
             <Typography variant={TypographyVariant.Body}>
-              Status: Ativa
+              Status: {subscriptionStatusLabel}
             </Typography>
             <Typography variant={TypographyVariant.Body}>
-              Expira em:{' '}
-              {DateTime.fromISO(subscription.expiryTime).toFormat('dd/MM/yyyy')}
+              {subscription.autoRenewing ? 'Renova em: ' : 'Expira em: '}
+              {DateTime.fromISO(subscription.expiryTime).toFormat(
+                'dd/MM/yyyy HH:mm'
+              )}
             </Typography>
           </View>
         )}

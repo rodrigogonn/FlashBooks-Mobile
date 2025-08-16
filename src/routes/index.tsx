@@ -28,6 +28,7 @@ import { ErrorPage } from 'components/ErrorPage';
 import { Config } from 'pages/Home/Config';
 import { useSubscription } from 'hooks/useSubscription';
 import { SubscriptionProvider } from 'providers/SubscriptionProvider';
+import { IAPListenerProvider } from 'providers/IAPListenerProvider';
 
 const Stack = createNativeStackNavigator<StackRouteParamList>();
 const Tab = createBottomTabNavigator<TabRouteParamList>();
@@ -76,7 +77,7 @@ export const LoggedInRoutes = () => {
         syncData(syncResponse);
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error loading synced data', error);
       setErrorSync(true);
     } finally {
       setIsLoadingSync(false);
@@ -94,8 +95,12 @@ export const LoggedInRoutes = () => {
     return <LoadingPage />;
   }
 
-  if (errorSubscription || (errorSync && !lastSync)) {
+  if (errorSync && !lastSync) {
     return <ErrorPage onRetry={loadData} />;
+  }
+
+  if (errorSubscription && !subscription) {
+    return <ErrorPage />;
   }
 
   return (
@@ -129,11 +134,13 @@ export const Routes = () => {
       <NavigationContainer>
         {user ? (
           <SubscriptionProvider>
-            <BooksProvider userId={user.id}>
-              <ReadingProvider userId={user.id}>
-                <LoggedInRoutes />
-              </ReadingProvider>
-            </BooksProvider>
+            <IAPListenerProvider>
+              <BooksProvider userId={user.id}>
+                <ReadingProvider userId={user.id}>
+                  <LoggedInRoutes />
+                </ReadingProvider>
+              </BooksProvider>
+            </IAPListenerProvider>
           </SubscriptionProvider>
         ) : (
           <Stack.Navigator

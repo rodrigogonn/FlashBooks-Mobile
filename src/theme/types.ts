@@ -48,6 +48,7 @@ export interface Palette {
   };
   text: {
     primary: string;
+    error: string;
   };
 }
 

@@ -1,6 +1,10 @@
-import { GOOGLE_WEB_CLIENT_ID, API_URL } from '@env';
+import { GOOGLE_WEB_CLIENT_ID, API_URL, ENV } from '@env';
 
 export const env = {
-  GOOGLE_WEB_CLIENT_ID: GOOGLE_WEB_CLIENT_ID,
-  API_URL: API_URL,
+  ENV,
+  IS_PRODUCTION: ENV === 'production',
+  IS_DEVELOPMENT: ENV === 'development',
+  IS_STAGING: ENV === 'staging',
+  GOOGLE_WEB_CLIENT_ID,
+  API_URL,
 };

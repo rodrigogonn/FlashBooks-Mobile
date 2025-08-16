@@ -47,6 +47,7 @@ export const theme: Theme = {
     },
     text: {
       primary: '#333333',
+      error: '#ff0000',
     },
   },
 };

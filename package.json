@@ -6,6 +6,7 @@
     "start": "expo start",
     "android": "cross-env EXPO_NO_DOTENV=1 ENVFILE=.env expo run:android",
     "expo:clean": "expo start -c",
+    "android:build:apk": "cross-env EXPO_NO_DOTENV=1 ENVFILE=.env android/gradlew assembleRelease -p android",
     "android:build:staging": "cross-env EXPO_NO_DOTENV=1 ENVFILE=.env.staging android/gradlew bundleRelease -p android",
     "android:build:staging:apk": "cross-env EXPO_NO_DOTENV=1 ENVFILE=.env.staging android/gradlew assembleRelease -p android",
     "android:build:production": "cross-env EXPO_NO_DOTENV=1 ENVFILE=.env.production android/gradlew bundleRelease -p android",
@@ -40,6 +41,7 @@
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
     "react-native-snap-carousel": "^3.9.1",
+    "toastify-react-native": "^7.2.0",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

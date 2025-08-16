@@ -11,8 +11,9 @@ import {
   SubscriptionPlatform,
   useIAP,
 } from 'react-native-iap';
+import { env } from 'environment';
 
-const premiumSubscriptionSku = 'com.flashbooks.assinatura.premium';
+export const premiumSubscriptionSku = 'com.flashbooks.assinatura.premium';
 
 enum PlanId {
   Monthly = 'comflashbooks-assinatura-premium-mensal',
@@ -32,12 +33,11 @@ interface SubscriptionDetails {
 export const Subscription = ({
   route,
 }: RouteParams<RouteName.Subscription>) => {
-  // const { theme } = useTheme();
+  const { theme } = useTheme();
   const {
     connected,
     subscriptions,
     getSubscriptions,
-    currentPurchase,
     currentPurchaseError,
     requestSubscription,
   } = useIAP();
@@ -126,24 +126,6 @@ export const Subscription = ({
     });
   }, [connected, getSubscriptions]);
 
-  useEffect(() => {
-    if (!currentPurchaseError) return;
-    console.log(
-      'currentPurchaseError [Subscription]',
-      JSON.stringify(currentPurchaseError, null, 2)
-    );
-    // ... listen to currentPurchaseError, to check if any error happened
-  }, [currentPurchaseError]);
-
-  useEffect(() => {
-    if (!currentPurchase) return;
-    console.log(
-      'currentPurchase [Subscription]',
-      JSON.stringify(currentPurchase, null, 2)
-    );
-    // ... listen to currentPurchase, to check if the purchase went through
-  }, [currentPurchase]);
-
   const handleRequestSubscription = async () => {
     if (!selectedPlanId) return;
 
@@ -162,8 +144,29 @@ export const Subscription = ({
         },
       ],
     });
-    console.log('Subscription requested successfully');
   };
+
+  if (!env.IS_PRODUCTION) {
+    return (
+      <PageLayout header={{ title: route.name }}>
+        <View
+          style={{
+            display: 'flex',
+            paddingHorizontal: 16,
+            gap: 16,
+            flexGrow: 1,
+          }}>
+          <Typography variant={TypographyVariant.Title}>
+            Você não tem uma assinatura ativa
+          </Typography>
+          <Typography variant={TypographyVariant.Body}>
+            Este ambiente não está disponível para assinaturas via app. Use uma
+            conta de teste para continuar.
+          </Typography>
+        </View>
+      </PageLayout>
+    );
+  }
 
   return (
     <PageLayout header={{ title: route.name }}>
@@ -184,7 +187,9 @@ export const Subscription = ({
 
         {currentPurchaseError && (
           <View>
-            <Typography variant={TypographyVariant.Body}>
+            <Typography
+              variant={TypographyVariant.Body}
+              style={{ color: theme.colors.text.error }}>
               {currentPurchaseError.message}
             </Typography>
           </View>

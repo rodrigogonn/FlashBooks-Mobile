@@ -15,6 +15,7 @@ export interface Subscription {
   status: SubscriptionStatus;
   startTime: string;
   expiryTime: string;
+  autoRenewing?: boolean;
   createdAt: string;
   updatedAt: string;
 }
