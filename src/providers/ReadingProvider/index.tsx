@@ -82,6 +82,7 @@ function readingReducer(
     case 'START_READING':
       return {
         ...state,
+        currentPageIndex: 0,
         started: true,
       };
 
