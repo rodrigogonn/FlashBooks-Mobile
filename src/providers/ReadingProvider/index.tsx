@@ -1,4 +1,5 @@
 import { useBooks } from 'hooks/useBooks';
+import { useReadingProgressStore } from 'stores/useReadingProgressStore';
 import { Book } from 'providers/BooksProvider/types';
 import React, {
   createContext,
@@ -6,7 +7,9 @@ import React, {
   useCallback,
   useMemo,
   useEffect,
+  useRef,
 } from 'react';
+import { InteractionManager } from 'react-native';
 import { EventEmitter, EventListener } from 'utils/eventEmitter';
 import { createUserSpecificStorage } from 'utils/userStorageAdapter';
 
@@ -56,10 +59,7 @@ function readingReducer(
       };
 
     case 'CHANGE_PAGE':
-      return {
-        ...state,
-        currentPageIndex: action.payload.index,
-      };
+      return state; // evitar re-render global; progresso vai para zustand
 
     case 'CHANGE_TEXT_SIZE':
       return {
@@ -111,6 +111,10 @@ export const ReadingProvider = ({
   const [state, dispatch] = useReducer(readingReducer, initialState);
   const { updateBookStatus, finishBook } = useBooks();
   const storage = useMemo(() => createUserSpecificStorage(userId), [userId]);
+  const setCurrentPageIdx = useReadingProgressStore(
+    (s) => s.setCurrentPageIndex
+  );
+  const resetProgress = useReadingProgressStore((s) => s.reset);
 
   const loadPersistedData = useCallback(async () => {
     try {
@@ -153,29 +157,48 @@ export const ReadingProvider = ({
     persistData(state);
   }, [state, persistData]);
 
-  const changeReadingBook = useCallback((newBook: Book) => {
-    dispatch({
-      type: 'CHANGE_BOOK',
-      payload: { book: newBook },
-    });
-  }, []);
+  const changeReadingBook = useCallback(
+    (newBook: Book) => {
+      dispatch({
+        type: 'CHANGE_BOOK',
+        payload: { book: newBook },
+      });
+      resetProgress();
+      if (newBook.lastReadPageIndex !== undefined) {
+        setCurrentPageIdx(newBook.lastReadPageIndex);
+      }
+    },
+    [resetProgress, setCurrentPageIdx]
+  );
+
+  const updateDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const changePage = useCallback(
     (index: number) => {
-      dispatch({ type: 'CHANGE_PAGE', payload: { index } });
+      // Atualiza via zustand para não re-renderizar o app inteiro
+      setCurrentPageIdx(index);
+
+      // Agenda a persistência do progresso após as interações atuais (não bloquear animação)
       if (state.book && index <= state.book.chapters.length - 1) {
-        updateBookStatus(state.book.id, { lastReadPageIndex: index });
+        if (updateDebounceRef.current) clearTimeout(updateDebounceRef.current);
+        updateDebounceRef.current = setTimeout(() => {
+          InteractionManager.runAfterInteractions(() => {
+            updateBookStatus(state.book!.id, { lastReadPageIndex: index });
+          });
+        }, 0);
       }
     },
-    [state.book, updateBookStatus]
+    [state.book, updateBookStatus, setCurrentPageIdx]
   );
 
   const startReading = useCallback(() => {
     dispatch({ type: 'START_READING' });
+    // Garantir reset imediato do índice no store de progresso
+    setCurrentPageIdx(0);
     if (state.book) {
       updateBookStatus(state.book.id, { lastReadPageIndex: 0 });
     }
-  }, [state.book, updateBookStatus]);
+  }, [state.book, updateBookStatus, setCurrentPageIdx]);
 
   const changeTextSize = useCallback((value: number) => {
     dispatch({ type: 'CHANGE_TEXT_SIZE', payload: { value } });

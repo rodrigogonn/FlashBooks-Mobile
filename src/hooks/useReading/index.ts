@@ -1,5 +1,6 @@
 import { ReadingContext } from 'providers/ReadingProvider';
 import { useContext, useEffect, useMemo } from 'react';
+import { useReadingProgressStore } from 'stores/useReadingProgressStore';
 
 interface UseReadingProps {
   onComplete?: () => void;
@@ -13,7 +14,6 @@ export const useReading = (params?: UseReadingProps) => {
 
   const {
     book,
-    currentPageIndex,
     started,
     textSize,
     adjustmentsOpen,
@@ -28,8 +28,11 @@ export const useReading = (params?: UseReadingProps) => {
     startReading,
   } = context;
 
+  const currentPageFromStore = useReadingProgressStore(
+    (s) => s.currentPageIndex
+  );
   const completed = book
-    ? currentPageIndex && currentPageIndex >= book.chapters.length
+    ? currentPageFromStore >= (book?.chapters.length || 0)
     : false;
   const { onComplete } = params || {};
 
@@ -54,7 +57,7 @@ export const useReading = (params?: UseReadingProps) => {
 
   return {
     book,
-    currentPageIndex,
+    currentPageIndex: currentPageFromStore,
     textSize,
     adjustmentsOpen,
     completed,

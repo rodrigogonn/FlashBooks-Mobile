@@ -1,10 +1,12 @@
 import { useReading } from 'hooks/useReading';
+import { useReadingProgressStore } from 'stores/useReadingProgressStore';
 import { useTheme } from 'hooks/useTheme';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 
 export const Progress = () => {
-  const { currentPageIndex, book, completed } = useReading();
+  const { book, completed } = useReading();
+  const currentPageIndex = useReadingProgressStore((s) => s.currentPageIndex);
   const { readingTheme } = useTheme();
   const percentage = useMemo(() => {
     if (!book) return 0;
