@@ -10,6 +10,7 @@ import React, { useMemo } from 'react';
 import { BookComponent } from 'components/BookComponent';
 import { View } from 'react-native';
 import { ContentType } from 'providers/BooksProvider/types';
+import { categories } from 'constants/categories';
 
 export const BookDescription = () => {
   const { book, startReading } = useReading();
@@ -39,6 +40,12 @@ export const BookDescription = () => {
     }, 0);
 
     return Math.max(1, Math.ceil(totalWords / WORDS_PER_MINUTE));
+  }, [book]);
+
+  const bookCategories = useMemo(() => {
+    if (!book) return [];
+    const ids = book.categoryIds || [];
+    return categories.filter((c) => ids.includes(c.id));
   }, [book]);
 
   if (!book) return null;
@@ -82,6 +89,35 @@ export const BookDescription = () => {
             {readingTimeInMinutes === 1 ? 'minuto' : 'minutos'}
           </ReadingTypography>
         </View>
+
+        {bookCategories.length > 0 && (
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: 8,
+            }}>
+            {bookCategories.map((cat) => (
+              <View
+                key={cat.id}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 6,
+                  paddingHorizontal: 10,
+                  paddingVertical: 6,
+                  borderRadius: 999,
+                  backgroundColor:
+                    readingTheme.colors.navigationButton.background,
+                }}>
+                <ReadingTypography variant={ReadingTypographyVariant.Small}>
+                  {cat.emoji} {cat.name}
+                </ReadingTypography>
+              </View>
+            ))}
+          </View>
+        )}
 
         <ReadingTypography variant={ReadingTypographyVariant.Paragraph}>
           {book.description}

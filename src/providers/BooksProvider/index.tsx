@@ -7,6 +7,9 @@ import React, {
 } from 'react';
 import { Book, BookCollection } from './types';
 import { createUserSpecificStorage } from 'utils/userStorageAdapter';
+import { saveBookChapters, loadBookChapters } from 'utils/bookContentStorage';
+
+type BookMeta = Omit<Book, 'chapters'>;
 
 interface BooksState {
   books: Book[];
@@ -200,21 +203,63 @@ export function BooksProvider({
       const persistedData = await storage.getItem(booksStoreKey);
       if (persistedData) {
         const parsedData = JSON.parse(persistedData);
+        // Rehidratar capítulos do filesystem
+        const booksWithChapters = await Promise.all(
+          (parsedData.books || []).map(async (b: Book) => {
+            const chapters = await loadBookChapters(b.id);
+            if (chapters) {
+              return { ...b, chapters } as Book;
+            }
+            return b;
+          })
+        );
         const loadedState = {
           ...initialState,
           ...parsedData,
+          books: booksWithChapters,
         };
         dispatch({ type: 'LOAD_PERSISTED_DATA', payload: loadedState });
       }
     } catch (error) {
       console.error('Error loading persisted books data:', error);
+      try {
+        // Em caso de registro grande corrompido (CursorWindow), limpa a chave para recuperar o app
+        await storage.removeItem(booksStoreKey);
+      } catch (removeError) {
+        console.warn(
+          'Error removing oversized books storage key:',
+          removeError
+        );
+      }
     }
   }, [storage]);
 
   const persistData = useCallback(
     async (data: BooksState) => {
       try {
-        await storage.setItem(booksStoreKey, JSON.stringify(data));
+        // Salvar capítulos grandes no filesystem
+        const metaBooks = await Promise.all(
+          data.books.map(async (b) => {
+            try {
+              if (b.chapters && b.chapters.length > 0) {
+                await saveBookChapters(b.id, b.chapters);
+                // Remover capítulos do payload salvo no AsyncStorage
+                const { chapters: _omit, ...rest } = b;
+                void _omit;
+                return rest as BookMeta;
+              }
+            } catch (e) {
+              console.warn('[BooksProvider] save chapters error', {
+                id: b.id,
+                e,
+              });
+            }
+            return b as BookMeta;
+          })
+        );
+
+        const payload = { ...data, books: metaBooks };
+        await storage.setItem(booksStoreKey, JSON.stringify(payload));
       } catch (error) {
         console.error('Error persisting books data:', error);
       }

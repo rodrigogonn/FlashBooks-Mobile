@@ -1,9 +1,10 @@
 import { Typography, TypographyVariant } from 'components/Typography';
 import { useTheme } from 'hooks/useTheme';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { TouchableOpacity, View, ViewStyle } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Book } from 'providers/BooksProvider/types';
-import FastImage from 'react-native-fast-image';
+import { CachedImage } from 'components/CachedImage';
 
 export interface BookComponentProps {
   book: Book;
@@ -14,9 +15,10 @@ export interface BookComponentProps {
     withTitle?: boolean;
     withProgress?: boolean;
     size?: 'small' | 'medium' | 'large';
+    withMarker?: boolean;
   };
 }
-export const BookComponent = ({
+const BookComponentComponent = ({
   book,
   options,
   style,
@@ -27,12 +29,20 @@ export const BookComponent = ({
     withProgress = false,
     size = 'medium',
     withTitle = true,
+    withMarker = false,
   } = options || {};
 
   const { theme } = useTheme();
   const progress = useMemo(() => {
     if (book.finished) return 1;
     return (book.lastReadPageIndex || 0) / book.chapters.length;
+  }, [book]);
+
+  const readingStatus = useMemo(() => {
+    if (book.finished) return 'finished' as const;
+    if ((book.lastReadPageIndex || 0) > 0 || !!book.lastReadAt)
+      return 'in_progress' as const;
+    return 'not_started' as const;
   }, [book]);
 
   return (
@@ -51,26 +61,62 @@ export const BookComponent = ({
           borderRadius: 8,
           overflow: 'hidden',
         }}>
-        <FastImage
+        <CachedImage
           style={{
             height: '100%',
             width: '100%',
           }}
-          source={{
-            uri: book.imageUrl,
-            priority: FastImage.priority.normal,
-            cache: FastImage.cacheControl.immutable,
-          }}
-          resizeMode={FastImage.resizeMode.cover}
+          source={{ uri: book.imageUrl }}
+          resizeMode="cover"
         />
+        {withMarker && readingStatus !== 'not_started' && (
+          <View
+            style={{
+              position: 'absolute',
+              top: 6,
+              right: 6,
+              height: 32,
+              width: 32,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: theme.colors.card.border,
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+            }}>
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+                backgroundColor: theme.colors.card.background,
+                opacity: 0.7,
+              }}
+            />
+            {readingStatus === 'finished' ? (
+              <MaterialIcons
+                name="star"
+                size={24}
+                color={theme.colors.common.accent}
+              />
+            ) : (
+              <MaterialIcons
+                name="bookmark-border"
+                size={24}
+                color={theme.colors.common.icon.normal}
+              />
+            )}
+          </View>
+        )}
         <View
-          // eslint-disable-next-line react-native/no-color-literals
           style={{
             position: 'absolute',
             height: '100%',
             width: 1,
             left: '2.5%',
-            backgroundColor: 'rgba(150, 150, 150, 0.2)',
+            backgroundColor: theme.colors.card.border,
             borderRadius: 8,
           }}
         />
@@ -104,3 +150,21 @@ export const BookComponent = ({
     </TouchableOpacity>
   );
 };
+
+function arePropsEqual(prev: BookComponentProps, next: BookComponentProps) {
+  if (prev.book === next.book && prev.style === next.style) {
+    // shallow compare of options fields used
+    const p = prev.options || {};
+    const n = next.options || {};
+    return (
+      p.withProgress === n.withProgress &&
+      p.size === n.size &&
+      p.withTitle === n.withTitle &&
+      prev.onPress === next.onPress &&
+      prev.onLongPress === next.onLongPress
+    );
+  }
+  return false;
+}
+
+export const BookComponent = memo(BookComponentComponent, arePropsEqual);

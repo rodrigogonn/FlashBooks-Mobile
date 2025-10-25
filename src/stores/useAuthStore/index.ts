@@ -5,7 +5,6 @@ import { jwtDecode } from 'jwt-decode';
 import { authService } from 'services/auth';
 import { JwtPayload, User } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import FastImage from 'react-native-fast-image';
 
 interface AuthState {
   token: string | null;
@@ -22,12 +21,6 @@ export const useAuthStore = create<AuthState>()(
       loginWithGoogle: async () => {
         const { token, user } = await authService.loginWithGoogle();
         const payload = jwtDecode<JwtPayload>(token);
-
-        if (user.photo) {
-          FastImage.preload([
-            { uri: user.photo, cache: FastImage.cacheControl.immutable },
-          ]);
-        }
 
         set({
           token,

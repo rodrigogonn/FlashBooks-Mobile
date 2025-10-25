@@ -6,6 +6,15 @@ import { RouteName, RouteParams, StackNavigation } from 'routes/types';
 import { Book } from 'providers/BooksProvider/types';
 
 const pageWidth = Dimensions.get('window').width;
+const H_PADDING = 16;
+const GAP = 16;
+
+function computeFlexBasis(columns: number): number {
+  const totalGaps = GAP * (columns - 1);
+  const totalPadding = H_PADDING * 2;
+  const available = pageWidth - totalPadding - totalGaps;
+  return Math.floor(available / columns);
+}
 
 export const BookList = ({
   route: {
@@ -28,18 +37,19 @@ export const BookList = ({
       }}>
       <View
         style={{
-          paddingHorizontal: 16,
+          paddingHorizontal: H_PADDING,
           display: 'flex',
           flexWrap: 'wrap',
           flexDirection: 'row',
-          gap: 16,
+          gap: GAP,
         }}>
         {books.map((book) => (
           <BookComponent
             key={book.id}
             book={book}
+            options={{ withMarker: true }}
             style={{
-              flexBasis: pageWidth / 3 - 64 / 3,
+              flexBasis: computeFlexBasis(3),
             }}
             onPress={() => handleSelectBook(book)}
           />

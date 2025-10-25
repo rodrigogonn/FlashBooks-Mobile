@@ -53,7 +53,8 @@ export const Discover = ({ route }: RouteParams<RouteName.Discover>) => {
   }, [books, collections]);
 
   const lastReleases = useMemo(() => {
-    return books
+    // avoid mutating original list; sort a copy
+    return [...books]
       .sort(
         (a, b) =>
           DateTime.fromISO(b.createdAt).toMillis() -
@@ -85,6 +86,7 @@ export const Discover = ({ route }: RouteParams<RouteName.Discover>) => {
       <BookList
         title="Últimos lançamentos"
         books={lastReleases}
+        withMarker
         onSeeAll={() =>
           stackNavigation.navigate(RouteName.BookList, {
             title: 'Últimos lançamentos',
@@ -109,6 +111,7 @@ export const Discover = ({ route }: RouteParams<RouteName.Discover>) => {
           key={collection.id}
           title={collection.name}
           books={collectionBooks}
+          withMarker
           onSeeAll={() =>
             stackNavigation.navigate(RouteName.BookList, {
               title: collection.name,

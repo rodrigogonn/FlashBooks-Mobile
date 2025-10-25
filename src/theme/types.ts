@@ -42,6 +42,7 @@ export interface Palette {
     border: {
       normal: string;
     };
+    accent: string;
   };
   modal: {
     backdrop: string;

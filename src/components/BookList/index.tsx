@@ -1,7 +1,8 @@
 import { BookComponent } from 'components/BookComponent';
 import { Typography, TypographyVariant } from 'components/Typography';
 import { useTheme } from 'hooks/useTheme';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { FlatList, TouchableOpacity, View } from 'react-native';
+import { useCallback, useMemo } from 'react';
 import { Book } from 'providers/BooksProvider/types';
 
 interface BookListProps {
@@ -13,6 +14,7 @@ interface BookListProps {
   small?: boolean;
   onSelect?: (book: Book) => void;
   onLongPress?: (book: Book) => void;
+  withMarker?: boolean;
 }
 
 export const BookList = ({
@@ -24,8 +26,32 @@ export const BookList = ({
   small,
   onSelect,
   onLongPress,
+  withMarker,
 }: BookListProps) => {
   const { theme } = useTheme();
+  const itemBaseWidth = useMemo(() => (small ? 155 * 0.6 : 155), [small]);
+
+  const keyExtractor = useCallback((item: Book) => String(item.id), []);
+  const optionsMemo = useMemo(
+    () => ({
+      size: (small ? 'small' : 'medium') as 'small' | 'medium',
+      withProgress,
+      withMarker,
+    }),
+    [small, withProgress, withMarker]
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: Book }) => (
+      <BookComponent
+        book={item}
+        options={optionsMemo}
+        onPress={() => onSelect?.(item)}
+        onLongPress={onLongPress ? () => onLongPress(item) : undefined}
+      />
+    ),
+    [onLongPress, onSelect, optionsMemo]
+  );
 
   return (
     <View
@@ -85,28 +111,26 @@ export const BookList = ({
         )}
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            paddingHorizontal: 16,
-            gap: 16,
-          }}>
-          {books.map((book) => (
-            <BookComponent
-              key={book.id}
-              book={book}
-              options={{
-                size: small ? 'small' : 'medium',
-                withProgress,
-              }}
-              onPress={() => onSelect?.(book)}
-              onLongPress={onLongPress ? () => onLongPress(book) : undefined}
-            />
-          ))}
-        </View>
-      </ScrollView>
+      <FlatList
+        horizontal
+        data={books}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
+        ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
+        removeClippedSubviews
+        windowSize={5}
+        maxToRenderPerBatch={8}
+        updateCellsBatchingPeriod={50}
+        initialNumToRender={6}
+        getItemLayout={(_, index) => ({
+          length: itemBaseWidth + 16,
+          offset: (itemBaseWidth + 16) * index + 16,
+          index,
+        })}
+        nestedScrollEnabled
+      />
     </View>
   );
 };

@@ -41,6 +41,7 @@ export const theme: Theme = {
       border: {
         normal: '#333333',
       },
+      accent: '#facc15',
     },
     modal: {
       backdrop: 'rgba(0, 0, 0, 0.7)',
