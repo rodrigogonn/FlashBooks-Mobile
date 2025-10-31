@@ -91,7 +91,7 @@ export const LoggedInRoutes = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingSubscription]);
 
-  if (isLoadingSubscription || (isLoadingSync && !lastSync)) {
+  if ((isLoadingSubscription || isLoadingSync) && !lastSync) {
     return <LoadingPage />;
   }
 
@@ -99,9 +99,13 @@ export const LoggedInRoutes = () => {
     return <ErrorPage onRetry={loadData} />;
   }
 
-  if (errorSubscription && !subscription) {
+  if (errorSubscription && !subscription && !lastSync) {
     return <ErrorPage />;
   }
+
+  const shouldShowHome = Boolean(
+    subscription || (isLoadingSubscription && lastSync)
+  );
 
   return (
     <Stack.Navigator
@@ -109,7 +113,7 @@ export const LoggedInRoutes = () => {
         headerShown: false,
         animation: 'slide_from_bottom',
       }}>
-      {subscription ? (
+      {shouldShowHome ? (
         <>
           <Stack.Screen name={RouteName.Home} component={Home} />
           <Stack.Screen name={RouteName.Reading} component={Reading} />
